@@ -1536,6 +1536,22 @@
       <img src="likhite_full_family_tree_ultra_hd.jpg" id="poster-img" alt="Full Family Tree Poster">
     </div>
 
+    <!-- Floating Stats -->
+    <div class="floating-stats" id="floatingStats">
+      <div class="stat-item">
+        <div class="stat-num" id="statMembers">175</div>
+        <div class="stat-label">Total Members</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statGens">12</div>
+        <div class="stat-label">Generations</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">7</div>
+        <div class="stat-label">Main Branches</div>
+      </div>
+    </div>
+
     <!-- Zoom & Navigation Controls -->
     <div class="zoom-controls" id="zoomControls">
       <button class="zoom-btn" id="btnPanLeft" title="Pan Left">◀</button>
@@ -1931,9 +1947,7 @@
       indexData(familyData.tree, null);
       updateStats();
       state.allNodesMap.forEach((_, id) => state.expandedNodes.add(id));
-      if (currentViewMode === 'mobile') {
-        renderMobileCards();
-      } else {
+      {
         renderTree();
       }
     }
@@ -2090,184 +2104,29 @@
 
 
     // =========================================================================
-    // MOBILE CARDS VIEW MODE LOGIC
+    // VIEW MODES (Interactive Tree Canvas & Poster View)
     // =========================================================================
-    let activeMobileGenFilter = 'all';
-    let currentViewMode = 'tree'; // 'mobile', 'tree', 'poster'
-
-    function renderMobileCards(filterQuery = '') {
-      const container = document.getElementById('mobileCardList');
-      if (!container) return;
-
-      const genSelector = document.getElementById('mobileGenSelector');
-      if (genSelector && genSelector.children.length === 0) {
-        // Build generation selector pills
-        let genHtml = '<button class="mobile-gen-pill active" onclick="setMobileGenFilter(\'all\')">All Generations</button>';
-        for (let g = 1; g <= 12; g++) {
-          genHtml += `<button class="mobile-gen-pill" id="genPill_${g}" onclick="setMobileGenFilter(${g})">Gen ${g}</button>`;
-        }
-        genSelector.innerHTML = genHtml;
-      }
-
-      const q = filterQuery.trim().toLowerCase();
-      const nodes = Array.from(state.allNodesMap.values()).filter(n => {
-        // Generation filter
-        if (activeMobileGenFilter !== 'all' && n.generation !== activeMobileGenFilter) {
-          return false;
-        }
-        // Branch filter
-        if (state.currentBranch !== 'all') {
-          // Check if node is in selected branch
-          let cur = n;
-          let inBranch = false;
-          while (cur) {
-            if (cur.branch_name && cur.branch_name.includes(state.currentBranch)) {
-              inBranch = true;
-              break;
-            }
-            cur = state.parentMap.get(cur.id);
-          }
-          if (!inBranch) return false;
-        }
-        // Text query
-        if (q) {
-          return (n.name_mr && n.name_mr.toLowerCase().includes(q)) ||
-                 (n.name_en && n.name_en.toLowerCase().includes(q)) ||
-                 (n.birthdate && n.birthdate.toLowerCase().includes(q)) ||
-                 (n.note && n.note.toLowerCase().includes(q));
-        }
-        return true;
-      });
-
-      if (nodes.length === 0) {
-        container.innerHTML = '<div style="text-align: center; color: var(--text-muted); padding: 40px 10px;">No family members found matching filter.</div>';
-        return;
-      }
-
-      container.innerHTML = nodes.map(n => {
-        const parent = state.parentMap.get(n.id);
-        const children = n.children || [];
-        const isUser = n.is_user || n.id === 'devavrat_11';
-
-        return `
-          <div class="mobile-person-card ${isUser ? 'user-card' : ''}" id="mcard-${n.id}">
-            <div class="mcard-header">
-              <div class="mcard-title">
-                <span class="mcard-mr">${n.name_mr}</span>
-                <span class="mcard-en">${n.name_en}</span>
-              </div>
-              <div class="mcard-badges">
-                <span class="mcard-gen">Gen ${n.generation}</span>
-                ${n.lineage_ended ? '<span class="mcard-ended" title="Lineage ended">✕</span>' : ''}
-                ${isUser ? '<span class="mcard-star">★ Devavrat</span>' : ''}
-              </div>
-            </div>
-
-            ${n.birthdate ? `<div class="mcard-bdate">🎂 Born: ${n.birthdate}</div>` : ''}
-            ${n.note ? `<div class="mcard-note">📝 ${n.note}</div>` : ''}
-
-            ${parent ? `
-              <div class="mcard-lineage">
-                Father: <a href="javascript:void(0)" onclick="mobileJumpToNode('${parent.id}')">${parent.name_mr} (${parent.name_en})</a>
-              </div>
-            ` : ''}
-
-            ${children.length > 0 ? `
-              <div class="mcard-children-box">
-                <div class="mcard-children-title">Children (${children.length}):</div>
-                <div class="mcard-children-list">
-                  ${children.map(c => `
-                    <button class="mcard-child-pill" onclick="mobileJumpToNode('${c.id}')">
-                      <span>${c.name_mr}</span> <small>(${c.name_en})</small>
-                    </button>
-                  `).join('')}
-                </div>
-              </div>
-            ` : ''}
-
-            <div class="mcard-actions">
-              <button class="btn btn-sm" onclick="openEditModal('${n.id}')">✏️ Edit</button>
-              <button class="btn btn-sm" onclick="openAddChildModal('${n.id}', 'child')">👶 Add Child</button>
-              ${parent ? `<button class="btn btn-sm" onclick="openAddChildModal('${n.id}', 'sibling')">👥 Sibling</button>` : ''}
-              ${children.length === 0 && n.id !== 'tukaji_1' ? `<button class="btn btn-sm btn-del" onclick="deleteNode('${n.id}')" title="Delete">🗑️</button>` : ''}
-            </div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    function setMobileGenFilter(gen) {
-      activeMobileGenFilter = gen;
-      document.querySelectorAll('.mobile-gen-pill').forEach(p => p.classList.remove('active'));
-      if (gen === 'all') {
-        const first = document.querySelector('.mobile-gen-pill');
-        if (first) first.classList.add('active');
-      } else {
-        const pill = document.getElementById(`genPill_${gen}`);
-        if (pill) pill.classList.add('active');
-      }
-      const q = document.getElementById('mobileSearchInput') ? document.getElementById('mobileSearchInput').value : '';
-      renderMobileCards(q);
-    }
-
-    function mobileJumpToNode(nodeId) {
-      if (currentViewMode !== 'mobile') {
-        switchToMobileMode();
-      }
-      activeMobileGenFilter = 'all';
-      renderMobileCards();
-      setTimeout(() => {
-        const el = document.getElementById(`mcard-${nodeId}`);
-        if (el) {
-          el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          el.classList.add('highlight');
-          setTimeout(() => el.classList.remove('highlight'), 2000);
-        }
-      }, 100);
-    }
-
-    function switchToMobileMode() {
-      currentViewMode = 'mobile';
-      document.getElementById('mobile-tree-container').style.display = 'block';
-      document.getElementById('tree-canvas').style.display = 'none';
-      document.getElementById('poster-container').style.display = 'none';
-      
-      document.getElementById('tabModeMobile').classList.add('active');
-      document.getElementById('tabModeTree').classList.remove('active');
-      document.getElementById('tabModePoster').classList.remove('active');
-      
-      document.getElementById('floatingStats').style.display = 'none';
-      document.getElementById('zoomControls').style.display = 'none';
-      renderMobileCards();
-    }
-
     function switchToTreeMode() {
-      currentViewMode = 'tree';
-      document.getElementById('mobile-tree-container').style.display = 'none';
       document.getElementById('tree-canvas').style.display = 'block';
       document.getElementById('poster-container').style.display = 'none';
-      
-      document.getElementById('tabModeMobile').classList.remove('active');
       document.getElementById('tabModeTree').classList.add('active');
       document.getElementById('tabModePoster').classList.remove('active');
-      
-      document.getElementById('floatingStats').style.display = 'flex';
-      document.getElementById('zoomControls').style.display = 'flex';
+      const fs = document.getElementById('floatingStats');
+      const zc = document.getElementById('zoomControls');
+      if (fs) fs.style.display = 'flex';
+      if (zc) zc.style.display = 'flex';
       renderTree();
     }
 
     function switchToPosterMode() {
-      currentViewMode = 'poster';
-      document.getElementById('mobile-tree-container').style.display = 'none';
       document.getElementById('tree-canvas').style.display = 'none';
       document.getElementById('poster-container').style.display = 'block';
-      
-      document.getElementById('tabModeMobile').classList.remove('active');
       document.getElementById('tabModeTree').classList.remove('active');
       document.getElementById('tabModePoster').classList.add('active');
-      
-      document.getElementById('floatingStats').style.display = 'none';
-      document.getElementById('zoomControls').style.display = 'none';
+      const fs = document.getElementById('floatingStats');
+      const zc = document.getElementById('zoomControls');
+      if (fs) fs.style.display = 'none';
+      if (zc) zc.style.display = 'none';
     }
 
     // App State
@@ -2347,14 +2206,16 @@
       }
     }
 
-    function updateStats() {
+        function updateStats() {
       const count = state.allNodesMap.size;
       let maxGen = 1;
       state.allNodesMap.forEach(n => {
         if (n.generation > maxGen) maxGen = n.generation;
       });
-      document.getElementById('statMembers').textContent = count;
-      document.getElementById('statGens').textContent = maxGen;
+      const elCount = document.getElementById('statMembers');
+      const elGens = document.getElementById('statGens');
+      if (elCount) elCount.textContent = count;
+      if (elGens) elGens.textContent = maxGen;
     }
 
     function indexData(node, parent) {
@@ -2660,10 +2521,7 @@
     }
 
     function jumpToNode(nodeId) {
-      if (currentViewMode === 'mobile') {
-        mobileJumpToNode(nodeId);
-        return;
-      }
+      
       const node = state.allNodesMap.get(nodeId);
       if (node) {
         showDetail(node);
@@ -2737,9 +2595,7 @@
 
       saveToStorage();
       document.getElementById('editModal').classList.remove('open');
-      if (currentViewMode === 'mobile') {
-        renderMobileCards();
-      } else {
+      {
         renderTree();
         showDetail(node);
       }
@@ -2826,9 +2682,7 @@
       updateStats();
 
       document.getElementById('addChildModal').classList.remove('open');
-      if (currentViewMode === 'mobile') {
-        mobileJumpToNode(newId);
-      } else {
+      {
         renderTree();
         jumpToNode(newId);
       }
@@ -3090,9 +2944,7 @@
 
       // User locate button
       document.getElementById('btnLocateUser').addEventListener('click', () => {
-        if (currentViewMode === 'mobile') {
-          mobileJumpToNode('devavrat_11');
-        } else {
+        {
           switchToTreeMode();
           locateUser();
         }
@@ -3184,42 +3036,10 @@
         document.getElementById('zoomControls').style.display = 'none';
       }
 
-      document.getElementById('tabModeMobile').addEventListener('click', switchToMobileMode);
+      
       document.getElementById('tabModeTree').addEventListener('click', switchToTreeMode);
       document.getElementById('tabModePoster').addEventListener('click', switchToPosterMode);
 
-      // Mobile search listener
-      const mobSearch = document.getElementById('mobileSearchInput');
-      if (mobSearch) {
-        mobSearch.addEventListener('input', (e) => {
-          renderMobileCards(e.target.value);
-        });
-      }
-
-
-
-      // WhatsApp Modal
-      document.getElementById('btnOpenWhatsApp').addEventListener('click', () => {
-        document.getElementById('whatsappModal').classList.add('open');
-      });
-      document.getElementById('whatsappModalClose').addEventListener('click', () => {
-        document.getElementById('whatsappModal').classList.remove('open');
-      });
-
-      // Scans Modal
-      document.getElementById('btnOpenScans').addEventListener('click', () => {
-        document.getElementById('scansModal').classList.add('open');
-      });
-      document.getElementById('modalClose').addEventListener('click', () => {
-        document.getElementById('scansModal').classList.remove('open');
-      });
-
-      // Close modal on click outside
-      window.addEventListener('click', (e) => {
-        if (e.target.classList.contains('modal-overlay')) {
-          e.target.classList.remove('open');
-        }
-      });
 
       // Live Search
       const searchInput = document.getElementById('searchInput');
