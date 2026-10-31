@@ -1743,6 +1743,23 @@
           <input type="text" class="form-control" id="editNameEn" placeholder="e.g. Devavrat">
         </div>
         <div class="form-group">
+          <label>Gender (लिंग) *</label>
+          <select class="form-control" id="editGender" style="background:#0f172a; color:#fff; cursor:pointer;">
+            <option value="M">👦 Male (पुरुष)</option>
+            <option value="F">👧 Female (स्त्री)</option>
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>Spouse Name (पती / पत्नीचे नाव)</label>
+            <input type="text" class="form-control" id="editSpouseMr" placeholder="उदा. सौ. ...">
+          </div>
+          <div class="form-group">
+            <label>Spouse Name (English)</label>
+            <input type="text" class="form-control" id="editSpouseEn" placeholder="e.g. Mrs. ...">
+          </div>
+        </div>
+        <div class="form-group">
           <label>Date of Birth (Birthdate)</label>
           <input type="text" class="form-control" id="editBirthdate" placeholder="e.g. 15 Aug 1985 or 1985-08-15">
         </div>
@@ -1750,10 +1767,16 @@
           <label>Notes / City / Additional Information</label>
           <input type="text" class="form-control" id="editNote" placeholder="e.g. Nagpur / Mumbai / Co-compiler">
         </div>
-        <label class="form-check">
-          <input type="checkbox" id="editLineageEnded">
-          <span style="font-size: 0.88rem; color: var(--text-muted);">Lineage ended without male heirs (✕)</span>
-        </label>
+        <div style="display:flex; flex-direction:column; gap:8px; margin-top:10px;">
+          <label class="form-check">
+            <input type="checkbox" id="editDeceased">
+            <span style="font-size: 0.88rem; color: #cbd5e1;">🕊️ Mark Deceased (कैलासवासी / कै.)</span>
+          </label>
+          <label class="form-check">
+            <input type="checkbox" id="editLineageEnded">
+            <span style="font-size: 0.88rem; color: var(--text-muted);">Lineage ended without male heirs (✕)</span>
+          </label>
+        </div>
       </div>
       <div class="modal-footer">
         <button class="btn" id="btnCancelEdit">Cancel</button>
@@ -1786,6 +1809,23 @@
           <input type="text" class="form-control" id="addNameEn" placeholder="e.g. Viaan">
         </div>
         <div class="form-group">
+          <label>Gender (लिंग) *</label>
+          <select class="form-control" id="addGender" style="background:#0f172a; color:#fff; cursor:pointer;">
+            <option value="M">👦 Male / Son (मुलगा / पुरुष)</option>
+            <option value="F">👧 Female / Daughter (मुलगी / स्त्री)</option>
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div class="form-group">
+            <label>Spouse Name (पती / पत्नीचे नाव)</label>
+            <input type="text" class="form-control" id="addSpouseMr" placeholder="उदा. सौ. ...">
+          </div>
+          <div class="form-group">
+            <label>Spouse Name (English)</label>
+            <input type="text" class="form-control" id="addSpouseEn" placeholder="e.g. Mrs. ...">
+          </div>
+        </div>
+        <div class="form-group">
           <label>Date of Birth (Birthdate)</label>
           <input type="text" class="form-control" id="addBirthdate" placeholder="e.g. 2021-03-25 or 25 March 2021">
         </div>
@@ -1793,6 +1833,10 @@
           <label>Notes / City / Location</label>
           <input type="text" class="form-control" id="addNote" placeholder="e.g. Pune / USA">
         </div>
+        <label class="form-check" style="margin-top:6px;">
+          <input type="checkbox" id="addDeceased">
+          <span style="font-size: 0.88rem; color: #cbd5e1;">🕊️ Mark Deceased (कैलासवासी / कै.)</span>
+        </label>
       </div>
       <div class="modal-footer">
         <button class="btn" id="btnCancelAddChild">Cancel</button>
@@ -2392,8 +2436,8 @@
     }
 
     function calculateLayout(rootNode) {
-      const nodeWidth = 165;
-      const nodeHeight = 65;
+      const nodeWidth = 175;
+      const nodeHeight = 72;
       const siblingGap = 16;
       const levelGap = 120;
 
@@ -2514,6 +2558,9 @@
       layoutNodes.forEach(node => {
         const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
         let classes = 'node-group';
+        const isFem = node.gender === 'F';
+        if (isFem) classes += ' female-node';
+        if (node.is_deceased) classes += ' deceased-node';
         if (node.lineage_ended) classes += ' lineage-ended';
         if (state.selectedNode && state.selectedNode.id === node.id) classes += ' selected-node';
 
@@ -2526,38 +2573,65 @@
         rect.setAttribute('width', node.width);
         rect.setAttribute('height', node.height);
         rect.setAttribute('rx', '10');
+
+        if (isFem) {
+          rect.setAttribute('stroke', '#f43f5e');
+          rect.setAttribute('stroke-width', '1.5');
+          rect.setAttribute('fill', '#261b2a');
+        } else if (node.lineage_ended) {
+          rect.setAttribute('stroke', '#ef4444');
+          rect.setAttribute('fill', '#1e293b');
+        } else {
+          rect.setAttribute('stroke', '#334155');
+          rect.setAttribute('fill', '#1e293b');
+        }
+
+        if (node.is_deceased) {
+          rect.setAttribute('stroke-dasharray', '4,2');
+        }
+
         g.appendChild(rect);
 
         // Devanagari Name (Marathi)
         const textMr = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         textMr.setAttribute('x', '14');
-        textMr.setAttribute('y', '27');
-        textMr.setAttribute('fill', '#ffffff');
+        textMr.setAttribute('y', '26');
+        textMr.setAttribute('fill', isFem ? '#fda4af' : '#ffffff');
         textMr.setAttribute('font-size', '15');
         textMr.setAttribute('font-weight', '700');
         textMr.setAttribute('font-family', 'Mukta, sans-serif');
-        textMr.textContent = node.name_mr;
+        textMr.textContent = (node.is_deceased ? '(कै.) ' : '') + node.name_mr;
         g.appendChild(textMr);
 
         // English Name
         const textEn = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         textEn.setAttribute('x', '14');
-        textEn.setAttribute('y', '44');
-        textEn.setAttribute('fill', '#94a3b8');
+        textEn.setAttribute('y', '43');
+        textEn.setAttribute('fill', isFem ? '#f43f5e' : '#94a3b8');
         textEn.setAttribute('font-size', '11');
         textEn.setAttribute('font-family', 'Outfit, sans-serif');
-        textEn.textContent = node.name_en;
+        textEn.textContent = (isFem ? '♀ ' : '') + node.name_en;
         g.appendChild(textEn);
 
-        // Birthdate snippet if available
-        if (node.birthdate) {
-          const bText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-          bText.setAttribute('x', '14');
-          bText.setAttribute('y', '57');
-          bText.setAttribute('fill', '#f59e0b');
-          bText.setAttribute('font-size', '9');
-          bText.textContent = `★ ${node.birthdate}`;
-          g.appendChild(bText);
+        // Third line: Spouse or Birthdate or Note
+        const textDetail = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        textDetail.setAttribute('x', '14');
+        textDetail.setAttribute('y', '60');
+        textDetail.setAttribute('font-size', '9.5');
+        textDetail.setAttribute('font-family', 'Mukta, Outfit, sans-serif');
+
+        if (node.spouse_mr || node.spouse_en) {
+          textDetail.setAttribute('fill', '#fbbf24');
+          textDetail.textContent = `💍 ${node.spouse_mr || node.spouse_en}`;
+          g.appendChild(textDetail);
+        } else if (node.birthdate) {
+          textDetail.setAttribute('fill', '#38bdf8');
+          textDetail.textContent = `★ ${node.birthdate}`;
+          g.appendChild(textDetail);
+        } else if (node.note) {
+          textDetail.setAttribute('fill', '#94a3b8');
+          textDetail.textContent = node.note.slice(0, 18);
+          g.appendChild(textDetail);
         }
 
         // Generation Badge
@@ -2565,7 +2639,7 @@
         genText.setAttribute('x', node.width - 10);
         genText.setAttribute('y', '22');
         genText.setAttribute('text-anchor', 'end');
-        genText.setAttribute('fill', '#f59e0b');
+        genText.setAttribute('fill', isFem ? '#fb7185' : '#f59e0b');
         genText.setAttribute('font-size', '9');
         genText.setAttribute('font-weight', '700');
         genText.textContent = `Gen ${node.generation}`;
@@ -2610,6 +2684,15 @@
       renderTree();
 
       let badgesHtml = `<span class="drawer-badge">Generation: ${node.generation}</span>`;
+      const isFem = node.gender === 'F';
+      badgesHtml += ` <span class="drawer-badge" style="background: ${isFem ? 'rgba(244, 63, 94, 0.2); color: #fb7185; border-color: #f43f5e;' : 'rgba(56, 189, 248, 0.2); color: #38bdf8;' }">${isFem ? '♀ Female (स्त्री)' : '♂ Male (पुरुष)'}</span>`;
+
+      if (node.is_deceased) {
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(148, 163, 184, 0.2); color: #cbd5e1; border-color: #64748b;">🕊️ Deceased (कै.)</span>`;
+      } else {
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399;">Living</span>`;
+      }
+
       if (node.lineage_ended) {
         badgesHtml += ` <span class="drawer-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: #ef4444;">✕ Lineage Ended</span>`;
       }
@@ -2640,6 +2723,15 @@
         <div class="drawer-name-mr">${node.name_mr}</div>
         <div class="drawer-name-en">${node.name_en}</div>
         <div style="margin-top: 6px;">${badgesHtml}</div>
+
+        ${(node.spouse_mr || node.spouse_en) ? `
+          <div style="margin-top: 10px; padding: 10px 12px; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 8px;">
+            <div style="font-size: 0.72rem; color: #fbbf24; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 2px;">Spouse (पती / पत्नी):</div>
+            <div style="font-size: 1.05rem; font-weight: 700; color: #fff; font-family: Mukta, sans-serif;">
+              💍 ${node.spouse_mr || ''} <span style="font-size: 0.85rem; color: #f59e0b; font-family: Outfit, sans-serif;">${node.spouse_en ? `(${node.spouse_en})` : ''}</span>
+            </div>
+          </div>
+        ` : ''}
 
         <!-- Action Buttons in English -->
         <div class="action-button-group">
@@ -2727,8 +2819,12 @@
       document.getElementById('editNodeId').value = node.id;
       document.getElementById('editNameMr').value = node.name_mr || '';
       document.getElementById('editNameEn').value = node.name_en || '';
+      document.getElementById('editGender').value = node.gender || 'M';
+      document.getElementById('editSpouseMr').value = node.spouse_mr || '';
+      document.getElementById('editSpouseEn').value = node.spouse_en || '';
       document.getElementById('editBirthdate').value = node.birthdate || '';
       document.getElementById('editNote').value = node.note || '';
+      document.getElementById('editDeceased').checked = !!node.is_deceased;
       document.getElementById('editLineageEnded').checked = !!node.lineage_ended;
 
       document.getElementById('editModal').classList.add('open');
@@ -2741,8 +2837,12 @@
 
       const nameMr = document.getElementById('editNameMr').value.trim();
       const nameEn = document.getElementById('editNameEn').value.trim();
+      const gender = document.getElementById('editGender').value;
+      const spMr = document.getElementById('editSpouseMr').value.trim();
+      const spEn = document.getElementById('editSpouseEn').value.trim();
       const bdate = document.getElementById('editBirthdate').value.trim();
       const note = document.getElementById('editNote').value.trim();
+      const deceased = document.getElementById('editDeceased').checked;
       const ended = document.getElementById('editLineageEnded').checked;
 
       if (!nameMr || !nameEn) {
@@ -2752,16 +2852,18 @@
 
       node.name_mr = nameMr;
       node.name_en = nameEn;
+      node.gender = gender;
+      if (spMr) node.spouse_mr = spMr; else delete node.spouse_mr;
+      if (spEn) node.spouse_en = spEn; else delete node.spouse_en;
       if (bdate) node.birthdate = bdate; else delete node.birthdate;
       if (note) node.note = note; else delete node.note;
+      node.is_deceased = deceased;
       node.lineage_ended = ended;
 
-      saveToStorage();
+      saveToStorage('Edited ' + nameEn);
       document.getElementById('editModal').classList.remove('open');
-      {
-        renderTree();
-        showDetail(node);
-      }
+      renderTree();
+      showDetail(node);
     }
 
     function openAddChildModal(nodeId, relType) {
@@ -2772,8 +2874,12 @@
       document.getElementById('addRelationType').value = relType;
       document.getElementById('addNameMr').value = '';
       document.getElementById('addNameEn').value = '';
+      document.getElementById('addGender').value = 'M';
+      document.getElementById('addSpouseMr').value = '';
+      document.getElementById('addSpouseEn').value = '';
       document.getElementById('addBirthdate').value = '';
       document.getElementById('addNote').value = '';
+      document.getElementById('addDeceased').checked = false;
 
       const notice = document.getElementById('addRelationNotice');
       if (relType === 'child') {
@@ -2826,12 +2932,21 @@
       const baseSlug = nameEn.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'person';
       const newId = `${baseSlug}_${gen}_${Date.now().toString().slice(-4)}`;
 
+      const gender = document.getElementById('addGender').value || 'M';
+      const spMr = document.getElementById('addSpouseMr').value.trim();
+      const spEn = document.getElementById('addSpouseEn').value.trim();
+      const isDec = document.getElementById('addDeceased').checked;
+
       const newPerson = {
         id: newId,
         name_mr: nameMr,
         name_en: nameEn,
+        gender: gender,
         generation: gen
       };
+      if (spMr) newPerson.spouse_mr = spMr;
+      if (spEn) newPerson.spouse_en = spEn;
+      if (isDec) newPerson.is_deceased = true;
       if (bdate) newPerson.birthdate = bdate;
       if (note) newPerson.note = note;
 
