@@ -1412,6 +1412,7 @@
     let firestoreDocRef = null;
     let isCloudSyncActive = false;
     let isApplyingRemoteUpdate = false;
+    let isFirestoreListenerAttached = false;
 
     function showToast(msg, icon = '🟢') {
       const toast = document.getElementById('toastNotification');
@@ -1419,7 +1420,7 @@
       document.getElementById('toastIcon').textContent = icon;
       document.getElementById('toastMessage').textContent = msg;
       toast.classList.add('show');
-      setTimeout(() => toast.classList.remove('show'), 3500);
+      setTimeout(() => toast.classList.remove('show'), 4000);
     }
 
     function updateCloudStatusUI(status, label, title, desc) {
@@ -1431,13 +1432,13 @@
 
       if (badge && text) {
         badge.style.display = 'inline-flex';
-        if (dot) dot.textContent = status === 'connected' ? '🟢' : (status === 'saving' ? '🔄' : '🟡');
+        if (dot) dot.textContent = status === 'connected' ? '🟢' : (status === 'saving' ? '🔄' : '⚠️');
         text.textContent = label;
       }
 
       if (modalTitle) {
         modalTitle.textContent = title;
-        modalTitle.style.color = status === 'connected' ? '#10b981' : '#f59e0b';
+        modalTitle.style.color = status === 'connected' ? '#10b981' : (status === 'saving' ? '#38bdf8' : '#ef4444');
       }
       if (modalDesc && desc) {
         modalDesc.textContent = desc;
@@ -1460,7 +1461,18 @@
       return null;
     }
 
+    function reindexAndRender() {
+      state.allNodesMap.clear();
+      state.parentMap.clear();
+      indexData(familyData.tree, null);
+      updateStats();
+      state.allNodesMap.forEach((_, id) => state.expandedNodes.add(id));
+      renderTree();
+    }
+
     function initFirebaseSync() {
+      if (isFirestoreListenerAttached) return;
+
       const config = getActiveFirebaseConfig();
       const configInput = document.getElementById('firebaseConfigInput');
       if (configInput && config) {
@@ -1481,27 +1493,32 @@
 
         updateCloudStatusUI('saving', 'Connecting Cloud...', 'Status: Connecting to Firebase Cloud...', 'Connecting to Firestore live database...');
 
-        // Real-time listener: triggers whenever any family member makes an edit
+        isFirestoreListenerAttached = true;
+
+        // Real-time listener: triggers whenever anyone makes an edit
         firestoreDocRef.onSnapshot((doc) => {
           if (doc.exists) {
             const data = doc.data();
             if (data && data.tree) {
               const remoteTimestamp = data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate().toLocaleTimeString() : 'Just now') : 'Just now';
               
-              // Only re-render if tree actually changed
               const currentStr = JSON.stringify(familyData.tree);
               const remoteStr = JSON.stringify(data.tree);
 
               if (currentStr !== remoteStr) {
-                isApplyingRemoteUpdate = true;
-                familyData.tree = data.tree;
-                if (data.metadata) familyData.metadata = data.metadata;
-                localStorage.setItem(STORAGE_KEY, JSON.stringify(familyData));
-                
-                buildIndices();
-                renderActiveView();
-                isApplyingRemoteUpdate = false;
-                showToast(`Family tree updated live! (${remoteTimestamp})`, '✨');
+                try {
+                  isApplyingRemoteUpdate = true;
+                  familyData.tree = data.tree;
+                  if (data.metadata) familyData.metadata = data.metadata;
+                  localStorage.setItem(STORAGE_KEY, JSON.stringify(familyData));
+                  
+                  reindexAndRender();
+                  showToast(`Family tree updated live! (${remoteTimestamp})`, '✨');
+                } catch (err) {
+                  console.error("Error applying remote update:", err);
+                } finally {
+                  isApplyingRemoteUpdate = false;
+                }
               }
 
               isCloudSyncActive = true;
@@ -1510,9 +1527,12 @@
           } else {
             // First time seed: document does not exist, upload initial tree data!
             console.log("Seeding initial family tree to Firestore...");
+            const cleanTree = JSON.parse(JSON.stringify(familyData.tree || DEFAULT_DATA.tree));
+            const cleanMeta = JSON.parse(JSON.stringify(familyData.metadata || DEFAULT_DATA.metadata));
+
             firestoreDocRef.set({
-              tree: DEFAULT_DATA.tree,
-              metadata: DEFAULT_DATA.metadata,
+              tree: cleanTree,
+              metadata: cleanMeta,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
               author: "Initial Digitization"
@@ -1522,11 +1542,12 @@
               showToast('Family tree uploaded to cloud database!', '☁️');
             }).catch(err => {
               console.error("Firestore seed error:", err);
+              handleFirestoreError(err);
             });
           }
         }, (error) => {
           console.error("Firestore live listener error:", error);
-          updateCloudStatusUI('local', 'Cloud Error (Using Local)', 'Status: ⚠️ Cloud Connection Failed', `Error: ${error.message}. Edits are being saved to your local storage.`);
+          handleFirestoreError(error);
         });
 
       } catch (err) {
@@ -1535,25 +1556,49 @@
       }
     }
 
+    function handleFirestoreError(err) {
+      const msg = err && err.message ? err.message : String(err);
+      if (msg.includes('permission') || msg.includes('Missing or insufficient permissions')) {
+        updateCloudStatusUI('local', 'Permission Denied', 'Status: ⚠️ Permission Denied in Firestore', 'Your Firebase Firestore Rules are blocking access. Go to Firebase Console -> Firestore Database -> Rules tab, and change rules to allow read, write.');
+        showToast('Firestore Rules blocked save! Please check Rules tab in Firebase.', '⚠️');
+      } else {
+        updateCloudStatusUI('local', 'Cloud Error (Using Local)', 'Status: ⚠️ Cloud Connection Failed', `Error: ${msg}. Edits are being saved to your local storage.`);
+        showToast('Cloud error: ' + msg, '⚠️');
+      }
+    }
+
     function saveToCloudDatabase(authorNote = 'Edit') {
-      if (!firebaseDb || !firestoreDocRef || isApplyingRemoteUpdate) return;
+      if (!firebaseDb || !firestoreDocRef) {
+        console.warn("Cloud save skipped: Firebase DB not initialized");
+        return;
+      }
+      if (isApplyingRemoteUpdate) {
+        console.log("Cloud save skipped: currently applying remote update");
+        return;
+      }
       
       updateCloudStatusUI('saving', 'Saving to Cloud...', 'Status: Saving Changes...', 'Uploading changes to the live family database...');
       
-      firestoreDocRef.set({
-        tree: familyData.tree,
-        metadata: familyData.metadata,
-        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
-        lastAction: authorNote
-      }, { merge: true }).then(() => {
-        const timeStr = new Date().toLocaleTimeString();
-        updateCloudStatusUI('connected', `Live Cloud (Saved ${timeStr})`, 'Status: 🟢 Connected & Live', `All changes are saved to the cloud. (Last save: ${timeStr})`);
-        showToast('Changes saved to family cloud!', '✅');
-      }).catch(err => {
-        console.error("Cloud save failed:", err);
-        updateCloudStatusUI('local', 'Saved Locally (Cloud failed)', 'Status: ⚠️ Cloud Save Failed', err.message);
-        showToast('Saved locally, but cloud sync failed.', '⚠️');
-      });
+      try {
+        const cleanTree = JSON.parse(JSON.stringify(familyData.tree));
+        const cleanMetadata = JSON.parse(JSON.stringify(familyData.metadata));
+
+        firestoreDocRef.set({
+          tree: cleanTree,
+          metadata: cleanMetadata,
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          lastAction: authorNote
+        }, { merge: true }).then(() => {
+          const timeStr = new Date().toLocaleTimeString();
+          updateCloudStatusUI('connected', `Live Cloud (Saved ${timeStr})`, 'Status: 🟢 Connected & Live', `All changes are saved to the cloud. (Last save: ${timeStr})`);
+          showToast('Changes saved to family cloud!', '✅');
+        }).catch(err => {
+          console.error("Cloud save failed:", err);
+          handleFirestoreError(err);
+        });
+      } catch (err) {
+        console.error("Serialization error in saveToCloudDatabase:", err);
+      }
     }
 
     // App State
