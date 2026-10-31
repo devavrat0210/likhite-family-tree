@@ -1558,9 +1558,17 @@
         Please enter the family password to access the portal.
       </div>
 
-      <form id="passwordForm" onsubmit="handleUnlockSubmit(event);">
+            <form id="passwordForm" onsubmit="handleUnlockSubmit(event);">
+        <div style="margin-bottom: 14px; text-align: left;">
+          <label for="loginRole" style="font-size: 0.78rem; color: #94a3b8; display: block; margin-bottom: 5px; font-weight: 600;">Access Mode:</label>
+          <select id="loginRole" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 0.95rem; outline: none; cursor: pointer;">
+            <option value="guest" selected>👤 Guest (Family Member)</option>
+            <option value="admin">🛡️ Admin (Devavrat / Full Control)</option>
+          </select>
+        </div>
+
         <div class="password-input-wrap">
-          <input type="password" id="passwordInput" placeholder="Enter family password" autofocus autocomplete="current-password" required>
+          <input type="password" id="passwordInput" placeholder="Enter password" autofocus autocomplete="current-password" required>
           <button type="button" id="togglePasswordVisibility" class="btn-eye" title="Show/Hide Password">👁️</button>
         </div>
 
@@ -1604,6 +1612,8 @@
         <div class="search-results" id="searchResults"></div>
       </div>
 
+      <!-- User Role Badge (Admin / Guest) -->
+      <div id="userRoleBadge" class="pill" style="display: none; padding: 4px 8px; font-size: 0.74rem; font-weight: 600; cursor: default;"></div>
       <!-- Quick Locate User Button -->
       <button class="btn btn-user" id="btnLocateUser" title="Find Devavrat branch">
         <span>★</span> <span class="btn-text-full">Devavrat</span>
@@ -1949,12 +1959,14 @@
   <script>
     
 
+        // =========================================================================
+    // ACCESS CONTROL (ROLE-BASED SHA-256 AUTHENTICATION)
+    // Admin Password: "likhiteadmin" -> Full permissions (Add Child/Sibling, Delete, Reset)
+    // Guest Password: "likhitefamily" -> Edit details allowed; Add Child/Sibling & Reset disabled
     // =========================================================================
-    // ACCESS CONTROL (SHA-256 PASSWORD PROTECTION)
-    // Default Password: "likhitefamily"
-    // To change password: hash your new password with SHA-256 and update below.
-    // =========================================================================
-    const PASSWORD_HASH = "c7d4d474041934d45ddd358d5a64d9a68866279b11db55f5b953bb20040c9cdf"; // sha256 of "likhitefamily"
+    const ADMIN_PASSWORD_HASH = "c5af197267b337c8628e19bff0917cda8a5c5a8e3de3be3e5bc39bbf7c04f382";
+    const GUEST_PASSWORD_HASH = "c7d4d474041934d45ddd358d5a64d9a68866279b11db55f5b953bb20040c9cdf";
+    let currentUserRole = 'guest'; // 'admin' or 'guest'
     let isAppInitialized = false;
 
     async function sha256(message) {
@@ -1964,9 +1976,40 @@
       return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
+    function applyRolePermissions() {
+      const savedRole = sessionStorage.getItem('likhite_family_role') || 'guest';
+      currentUserRole = savedRole;
+      const isAdmin = currentUserRole === 'admin';
+
+      // 1. Role Badge in Header
+      const roleBadge = document.getElementById('userRoleBadge');
+      if (roleBadge) {
+        if (isAdmin) {
+          roleBadge.innerHTML = '🛡️ <span class="role-name">Admin</span>';
+          roleBadge.style.borderColor = '#f59e0b';
+          roleBadge.style.color = '#fbbf24';
+          roleBadge.title = 'Logged in as Admin (Full Control)';
+        } else {
+          roleBadge.innerHTML = '👤 <span class="role-name">Guest</span>';
+          roleBadge.style.borderColor = '#38bdf8';
+          roleBadge.style.color = '#7dd3fc';
+          roleBadge.title = 'Logged in as Guest (Edit details only; adding child/sibling and reset disabled)';
+        }
+        roleBadge.style.display = 'inline-flex';
+      }
+
+      // 2. Hide / Show Reset Button in filter-bar
+      const resetBtn = document.getElementById('btnResetTree');
+      if (resetBtn) {
+        resetBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+      }
+    }
+
     async function handleUnlockSubmit(e) {
       if (e) e.preventDefault();
       const input = document.getElementById('passwordInput');
+      const roleSelect = document.getElementById('loginRole');
+      const selectedRole = roleSelect ? roleSelect.value : 'guest';
       const errorDiv = document.getElementById('passwordError');
       const val = input.value.trim();
       
@@ -1974,41 +2017,56 @@
 
       try {
         const hashed = await sha256(val);
-        if (hashed === PASSWORD_HASH) {
+        let authenticatedRole = null;
+
+        if (hashed === ADMIN_PASSWORD_HASH || val === 'likhiteadmin') {
+          authenticatedRole = 'admin';
+        } else if (hashed === GUEST_PASSWORD_HASH || val === 'likhitefamily') {
+          authenticatedRole = 'guest';
+        }
+
+        if (authenticatedRole) {
+          if (selectedRole === 'admin' && authenticatedRole !== 'admin') {
+            errorDiv.textContent = "Entered password is for Guest role, not Admin. Please choose Guest or enter admin password.";
+            errorDiv.classList.add('show');
+            return;
+          }
+
+          currentUserRole = authenticatedRole;
           sessionStorage.setItem('likhite_family_auth', 'authenticated');
+          sessionStorage.setItem('likhite_family_role', authenticatedRole);
           document.getElementById('passwordGate').style.display = 'none';
           errorDiv.classList.remove('show');
+          applyRolePermissions();
+
           if (!isAppInitialized) {
             initApp();
             isAppInitialized = true;
+          } else {
+            renderTree();
           }
         } else {
+          errorDiv.textContent = "Incorrect password. Please try again.";
           errorDiv.classList.add('show');
           input.select();
         }
       } catch (err) {
         console.error("Crypto error:", err);
-        // Fallback check if crypto subtle is unavailable
-        if (val === 'likhitefamily') {
-          sessionStorage.setItem('likhite_family_auth', 'authenticated');
-          document.getElementById('passwordGate').style.display = 'none';
-          if (!isAppInitialized) {
-            initApp();
-            isAppInitialized = true;
-          }
-        } else {
-          errorDiv.classList.add('show');
-        }
       }
     }
 
     function lockPortal() {
       sessionStorage.removeItem('likhite_family_auth');
+      sessionStorage.removeItem('likhite_family_role');
+      currentUserRole = 'guest';
       document.getElementById('passwordGate').style.display = 'flex';
       const input = document.getElementById('passwordInput');
-      input.value = '';
-      document.getElementById('passwordError').classList.remove('show');
-      input.focus();
+      if (input) {
+        input.value = '';
+        input.focus();
+      }
+      const err = document.getElementById('passwordError');
+      if (err) err.classList.remove('show');
     }
 
     function setupAuthGate() {
@@ -2030,11 +2088,12 @@
 
       if (isAuth) {
         gate.style.display = 'none';
+        applyRolePermissions();
         initApp();
         isAppInitialized = true;
       } else {
         gate.style.display = 'flex';
-        passInput.focus();
+        if (passInput) passInput.focus();
       }
     }
 
@@ -2364,6 +2423,7 @@
         state.allNodesMap.forEach((_, id) => state.expandedNodes.add(id));
 
         setupEventListeners();
+        applyRolePermissions();
 
       // Cloud Sync Modal Listeners
       const cloudModal = document.getElementById('cloudModal');
@@ -2738,6 +2798,7 @@
           <button class="btn btn-save" style="justify-content: center;" onclick="openEditModal('${node.id}')">
             ✏️ Edit Person
           </button>
+          ${currentUserRole === 'admin' ? `
           <button class="btn btn-user" style="justify-content: center;" onclick="openAddChildModal('${node.id}', 'child')">
             ➕ Add Child
           </button>
@@ -2747,6 +2808,11 @@
           <button class="btn btn-danger" style="justify-content: center;" onclick="deleteNode('${node.id}')">
             🗑️ Delete
           </button>
+          ` : `
+          <div style="grid-column: 1 / -1; font-size: 0.76rem; color: var(--text-muted); text-align: center; padding: 6px; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px dashed #334155; margin-top: 4px;">
+            👤 Guest Access: You can edit person details. Adding child/sibling requires Admin login.
+          </div>
+          `}
         </div>
 
         <div class="drawer-section">
@@ -2867,6 +2933,10 @@
     }
 
     function openAddChildModal(nodeId, relType) {
+      if (currentUserRole !== 'admin') {
+        alert('Only Admin can add new members to the family tree.');
+        return;
+      }
       const node = state.allNodesMap.get(nodeId);
       if (!node) return;
 
@@ -2897,6 +2967,10 @@
     }
 
     function saveNewChildModal() {
+      if (currentUserRole !== 'admin') {
+        alert('Only Admin can save new members to the family tree.');
+        return;
+      }
       const targetNodeId = document.getElementById('addParentNodeId').value;
       const relType = document.getElementById('addRelationType').value;
       const nameMr = document.getElementById('addNameMr').value.trim();
@@ -2967,6 +3041,10 @@
     }
 
     function deleteNode(nodeId) {
+      if (currentUserRole !== 'admin') {
+        alert('Only Admin can delete members from the family tree.');
+        return;
+      }
       if (nodeId === familyData.tree.id) {
         alert("Cannot delete founding ancestor Tukaji.");
         return;
@@ -3030,6 +3108,10 @@
     }
 
     function resetToDefault() {
+      if (currentUserRole !== 'admin') {
+        alert('Reset functionality is only available to Admin.');
+        return;
+      }
       if (confirm("Reset all edits and return to original family tree?")) {
         localStorage.removeItem(STORAGE_KEY);
         familyData = JSON.parse(JSON.stringify(DEFAULT_DATA));
