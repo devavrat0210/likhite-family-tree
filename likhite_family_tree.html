@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="mr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>मुरबाडकर लिखिते वंशावळ | Murbadkar Likhite Family Tree (Interactive &amp; Editable)</title>
+  <title>Murbadkar Likhite Family Tree (12 Generations)</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com">
-  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
       --bg-primary: #0a0f1d;
@@ -28,7 +28,7 @@
       box-sizing: border-box;
       margin: 0;
       padding: 0;
-      font-family: 'Mukta', 'Outfit', system-ui, -apple-system, sans-serif;
+      font-family: 'Outfit', 'Mukta', system-ui, -apple-system, sans-serif;
     }
 
     body {
@@ -41,7 +41,7 @@
       flex-direction: column;
     }
 
-    /* Top Navigation */
+    /* Top Navigation Header */
     header {
       background: var(--bg-secondary);
       border-bottom: 1px solid var(--border-color);
@@ -71,6 +71,7 @@
       font-size: 24px;
       font-weight: 800;
       color: #fff;
+      font-family: 'Mukta', sans-serif;
       box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
     }
 
@@ -117,7 +118,7 @@
 
     .search-box {
       position: relative;
-      width: 200px;
+      width: 210px;
     }
 
     .search-box input {
@@ -150,7 +151,7 @@
       position: absolute;
       top: calc(100% + 4px);
       left: 0;
-      width: 300px;
+      width: 320px;
       max-height: 380px;
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -225,6 +226,10 @@
       border-color: #25d366;
       color: #fff;
       font-weight: 600;
+    }
+
+    .btn-whatsapp:hover {
+      background: linear-gradient(135deg, #128c7e, #25d366);
     }
 
     .btn-danger {
@@ -311,7 +316,6 @@
       font-weight: 600;
     }
 
-    /* Storage status pill */
     #storageBadge {
       font-size: 0.75rem;
       color: #34d399;
@@ -434,7 +438,7 @@
       color: #000;
     }
 
-    /* Tree Node Styling - UNIFORM STYLING */
+    /* Tree Node Styling */
     .node-group {
       cursor: pointer;
       transition: transform 0.2s;
@@ -531,6 +535,7 @@
       font-weight: 700;
       color: #fff;
       line-height: 1.1;
+      font-family: 'Mukta', sans-serif;
     }
 
     .drawer-name-en {
@@ -625,7 +630,7 @@
       border: 1px solid var(--border-color);
       border-radius: 16px;
       width: 90vw;
-      max-width: 580px;
+      max-width: 560px;
       max-height: 90vh;
       display: flex;
       flex-direction: column;
@@ -740,49 +745,50 @@
     <div class="brand-area">
       <div class="crest">लि</div>
       <div class="brand-text">
-        <h1>मुरबाडकर लिखिते वंशावळ</h1>
-        <p>Murbadkar Likhite Family Tree (Interactive &amp; Editable)</p>
+        <h1>Murbadkar Likhite Family Tree</h1>
+        <p>12 Generations &bull; 175+ Members Recorded</p>
       </div>
     </div>
 
     <div class="header-pills">
-      <div class="pill">कुलदैवत: <strong>व्याघ्रांबरी, मुंजावती</strong></div>
-      <div class="pill">गोत्र: <strong>गंधमादन</strong></div>
-      <div id="storageBadge">● बदल सेव्ह झाले आहेत</div>
+      <div class="pill">Deity: <strong>Vyaghrambari, Munjawati</strong></div>
+      <div class="pill">Gotra: <strong>Gandhamadan</strong></div>
+      <div class="pill">Original Date: <strong>Nov 28, 1992</strong></div>
+      <div id="storageBadge">● Changes Saved Locally</div>
     </div>
 
     <div class="toolbar">
       <!-- Search Box -->
       <div class="search-box">
         <span class="search-icon">🔍</span>
-        <input type="text" id="searchInput" placeholder="Search / शोधा...">
+        <input type="text" id="searchInput" placeholder="Search ancestor...">
         <div class="search-results" id="searchResults"></div>
       </div>
 
       <!-- Quick Locate User Button -->
-      <button class="btn btn-user" id="btnLocateUser" title="देवव्रत यांच्या शाखेकडे जा">
-        <span>🌟</span> देवव्रत (Devavrat)
+      <button class="btn btn-user" id="btnLocateUser" title="Find Devavrat branch">
+        <span>★</span> Devavrat
       </button>
 
       <!-- Save & Export JSON Button -->
-      <button class="btn btn-save" id="btnExportJSON" title="नवीन नोंदी फाईलमध्ये जतन करा">
+      <button class="btn btn-save" id="btnExportJSON" title="Export updated JSON database">
         <span>💾</span> Export JSON
       </button>
 
       <!-- Import JSON Button -->
-      <label class="btn" title="जतन केलेली JSON फाईल लोड करा" style="cursor: pointer;">
+      <label class="btn" title="Import previously saved JSON file" style="cursor: pointer;">
         <span>📂</span> Import JSON
         <input type="file" id="importFileInput" accept=".json" style="display: none;">
       </label>
 
       <!-- WhatsApp Modal Trigger -->
-      <button class="btn btn-whatsapp" id="btnOpenWhatsApp">
-        <span>📲</span> WhatsApp फोटो
+      <button class="btn btn-whatsapp" id="btnOpenWhatsApp" title="WhatsApp-ready exports">
+        <span>📲</span> WhatsApp Images
       </button>
 
       <!-- View Scans Modal Trigger -->
-      <button class="btn" id="btnOpenScans">
-        <span>📜</span> मूळ पत्रके (Scans)
+      <button class="btn" id="btnOpenScans" title="View 1992 handwritten sheets">
+        <span>📜</span> Original Scans
       </button>
     </div>
   </header>
@@ -791,26 +797,26 @@
   <div class="filter-bar">
     <!-- View Mode Switch -->
     <div class="view-mode-tabs">
-      <button class="view-mode-btn active" id="tabModeTree">🌟 परस्परसंवादी वृक्ष (Interactive)</button>
-      <button class="view-mode-btn" id="tabModePoster">📜 संपूर्ण वंशावळ पोस्टर (Full Poster)</button>
+      <button class="view-mode-btn active" id="tabModeTree">🌟 Interactive Tree</button>
+      <button class="view-mode-btn" id="tabModePoster">📜 Full Poster View</button>
     </div>
 
     <!-- Branch Filtering (Tree Mode) -->
     <div class="branch-tabs" id="branchTabs">
-      <button class="branch-tab active" data-branch="all">सर्व शाखा (All Branches)</button>
-      <button class="branch-tab" data-branch="appaji">आप्पाजी शाखा</button>
-      <button class="branch-tab" data-branch="jayaram">जयराम शाखा</button>
-      <button class="branch-tab" data-branch="govind">गोविंद/वासुदेव शाखा</button>
-      <button class="branch-tab" data-branch="mahadev">महादेव शाखा</button>
-      <button class="branch-tab" data-branch="vitthal">विठ्ठल शाखा</button>
-      <button class="branch-tab" data-branch="narayan">नारायण शाखा</button>
+      <button class="branch-tab active" data-branch="all">All Branches</button>
+      <button class="branch-tab" data-branch="appaji">Appaji Branch</button>
+      <button class="branch-tab" data-branch="jayaram">Jayaram Branch</button>
+      <button class="branch-tab" data-branch="govind">Govind / Vasudev Branch</button>
+      <button class="branch-tab" data-branch="mahadev">Mahadev Branch</button>
+      <button class="branch-tab" data-branch="vitthal">Vitthal Branch</button>
+      <button class="branch-tab" data-branch="narayan">Narayan Branch</button>
     </div>
 
     <div style="display: flex; gap: 8px;">
-      <button class="btn" id="btnResetTree" title="मूळ वंशावळीवर रीसेट करा" style="color: var(--text-muted);">
-        🔄 मूळ रीसेट
+      <button class="btn" id="btnResetTree" title="Reset all changes to original tree" style="color: var(--text-muted);">
+        🔄 Reset
       </button>
-      <button class="btn" id="btnFitScreen">Fit View (स्क्रीनवर बसवा)</button>
+      <button class="btn" id="btnFitScreen">Fit Screen</button>
       <button class="btn" id="btnOrientation">Horizontal ⇄ Vertical</button>
     </div>
   </div>
@@ -828,7 +834,7 @@
     <!-- Poster Viewer (Alternative Mode) -->
     <div id="poster-container">
       <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
-        संपूर्ण १७५ कुटुंबीय व १२ पिढ्यांचे हाय-रिझोल्यूशन पोस्टर (29,712 × 5,110 px) • झूम करण्यासाठी क्लिक करा:
+        Complete 175 Members &bull; 12 Generations Ultra-HD Poster (29,712 &times; 5,110 px) &bull; Click and drag to pan:
       </p>
       <img src="likhite_full_family_tree_ultra_hd.jpg" id="poster-img" alt="Full Family Tree Poster">
     </div>
@@ -837,15 +843,15 @@
     <div class="floating-stats" id="floatingStats">
       <div class="stat-item">
         <div class="stat-num" id="statMembers">175</div>
-        <div class="stat-label">एकूण कुटुंबीय (Members)</div>
+        <div class="stat-label">Total Members</div>
       </div>
       <div class="stat-item">
         <div class="stat-num" id="statGens">12</div>
-        <div class="stat-label">पिढ्या (Generations)</div>
+        <div class="stat-label">Generations</div>
       </div>
       <div class="stat-item">
         <div class="stat-num">7</div>
-        <div class="stat-label">मुख्य शाखा (Branches)</div>
+        <div class="stat-label">Main Branches</div>
       </div>
     </div>
 
@@ -853,14 +859,14 @@
     <div class="zoom-controls" id="zoomControls">
       <button class="zoom-btn" id="btnZoomIn" title="Zoom In">+</button>
       <button class="zoom-btn" id="btnZoomOut" title="Zoom Out">−</button>
-      <button class="zoom-btn" id="btnResetZoom" title="Reset View">⊙</button>
+      <button class="zoom-btn" id="btnResetZoom" title="Center View">⊙</button>
     </div>
   </main>
 
   <!-- Member Detail Drawer -->
   <aside class="detail-drawer" id="detailDrawer">
     <div class="drawer-header">
-      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">कुटुंबीय तपशील (Member Details)</span>
+      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">Member Details</span>
       <button class="drawer-close" id="drawerClose">&times;</button>
     </div>
     <div class="drawer-body" id="drawerContent">
@@ -872,35 +878,35 @@
   <div class="modal-overlay" id="editModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div style="font-size: 1.1rem; font-weight: 700;">✏️ माहिती दुरुस्त करा (Edit Person)</div>
+        <div style="font-size: 1.1rem; font-weight: 700;">✏️ Edit Member Information</div>
         <button class="drawer-close" id="editModalClose">&times;</button>
       </div>
       <div class="modal-body">
         <input type="hidden" id="editNodeId">
         <div class="form-group">
-          <label>नाव (मराठी) / Name in Devanagari *</label>
-          <input type="text" class="form-control" id="editNameMr" placeholder="उदा. देवव्रत">
+          <label>Name (Devanagari / Marathi) *</label>
+          <input type="text" class="form-control" id="editNameMr" placeholder="e.g. देवव्रत">
         </div>
         <div class="form-group">
-          <label>Name (English) / इंग्रजी नाव *</label>
+          <label>Name (English Transliteration) *</label>
           <input type="text" class="form-control" id="editNameEn" placeholder="e.g. Devavrat">
         </div>
         <div class="form-group">
-          <label>जन्म तारीख (Birthdate)</label>
-          <input type="text" class="form-control" id="editBirthdate" placeholder="उदा. 15 ऑगस्ट 1985 किंवा 1985-08-15">
+          <label>Date of Birth (Birthdate)</label>
+          <input type="text" class="form-control" id="editBirthdate" placeholder="e.g. 15 Aug 1985 or 1985-08-15">
         </div>
         <div class="form-group">
-          <label>टीप / शहर / व्यवसाय (Notes / Location)</label>
-          <input type="text" class="form-control" id="editNote" placeholder="उदा. नागपूर / मुंबई / सह-संकलक">
+          <label>Notes / City / Additional Information</label>
+          <input type="text" class="form-control" id="editNote" placeholder="e.g. Nagpur / Mumbai / Co-compiler">
         </div>
         <label class="form-check">
           <input type="checkbox" id="editLineageEnded">
-          <span style="font-size: 0.88rem; color: var(--text-muted);">वंशखंडित (Lineage ended / no male heirs ✕)</span>
+          <span style="font-size: 0.88rem; color: var(--text-muted);">Lineage ended without male heirs (✕)</span>
         </label>
       </div>
       <div class="modal-footer">
-        <button class="btn" id="btnCancelEdit">रद्द करा (Cancel)</button>
-        <button class="btn btn-save" id="btnSaveEdit">जतन करा (Save Changes)</button>
+        <button class="btn" id="btnCancelEdit">Cancel</button>
+        <button class="btn btn-save" id="btnSaveEdit">Save Changes</button>
       </div>
     </div>
   </div>
@@ -909,7 +915,7 @@
   <div class="modal-overlay" id="addChildModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div style="font-size: 1.1rem; font-weight: 700;">➕ नवीन व्यक्ती जोडा (Add New Entry)</div>
+        <div style="font-size: 1.1rem; font-weight: 700;">➕ Add Person to Family Tree</div>
         <button class="drawer-close" id="addChildModalClose">&times;</button>
       </div>
       <div class="modal-body">
@@ -917,29 +923,29 @@
         <input type="hidden" id="addRelationType" value="child">
         
         <p style="font-size: 0.85rem; color: var(--accent); margin-bottom: 14px;" id="addRelationNotice">
-          पालक: तुकाजी (पिढी १) यांच्या खाली नवीन मूल जोडले जाईल.
+          Adding new entry...
         </p>
 
         <div class="form-group">
-          <label>नाव (मराठी) / Name in Devanagari *</label>
-          <input type="text" class="form-control" id="addNameMr" placeholder="उदा. विआन">
+          <label>Name (Devanagari / Marathi) *</label>
+          <input type="text" class="form-control" id="addNameMr" placeholder="e.g. विआन">
         </div>
         <div class="form-group">
-          <label>Name (English) / इंग्रजी नाव *</label>
+          <label>Name (English Transliteration) *</label>
           <input type="text" class="form-control" id="addNameEn" placeholder="e.g. Viaan">
         </div>
         <div class="form-group">
-          <label>जन्म तारीख (Birthdate)</label>
-          <input type="text" class="form-control" id="addBirthdate" placeholder="उदा. 2021-03-25 किंवा 25 मार्च 2021">
+          <label>Date of Birth (Birthdate)</label>
+          <input type="text" class="form-control" id="addBirthdate" placeholder="e.g. 2021-03-25 or 25 March 2021">
         </div>
         <div class="form-group">
-          <label>टीप / शहर (Notes / City)</label>
-          <input type="text" class="form-control" id="addNote" placeholder="उदा. पुणे / अमेरिका">
+          <label>Notes / City / Location</label>
+          <input type="text" class="form-control" id="addNote" placeholder="e.g. Pune / USA">
         </div>
       </div>
       <div class="modal-footer">
-        <button class="btn" id="btnCancelAddChild">रद्द करा (Cancel)</button>
-        <button class="btn btn-user" id="btnSaveNewChild">वंशावळीत जोडा (Add to Tree)</button>
+        <button class="btn" id="btnCancelAddChild">Cancel</button>
+        <button class="btn btn-user" id="btnSaveNewChild">Add to Tree</button>
       </div>
     </div>
   </div>
@@ -949,22 +955,22 @@
     <div class="modal-content" style="max-width: 950px; height: auto; max-height: 90vh;">
       <div class="modal-header">
         <div style="font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
-          <span style="color: #25d366; font-size: 1.4rem;">📲</span> व्हॉट्सअ‍ॅपवर शेअर करण्यासाठी फोटो (WhatsApp Ready Exports)
+          <span style="color: #25d366; font-size: 1.4rem;">📲</span> WhatsApp-Ready Image Exports
         </div>
         <button class="drawer-close" id="whatsappModalClose">&times;</button>
       </div>
       <div class="modal-body">
         <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px;">
-          खालील चित्रे खास मोबाईल व व्हॉट्सअ‍ॅपवर पाठवण्यासाठी उच्च दर्जाच्या रिझोल्यूशनमध्ये तयार केली आहेत:
+          Download high-resolution graphics formatted for smartphone screens and WhatsApp messaging:
         </p>
 
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
           <!-- Card 1: Complete Full Tree Poster -->
           <div style="background: var(--bg-card); border: 2px solid var(--accent); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-            <div style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">सर्वोच्च गुणवत्ता (Full Tree)</div>
+            <div style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">Full Tree (Master Chart)</div>
             <img src="likhite_full_family_tree_ultra_hd.jpg" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px; background: #080d1a; padding: 4px; border: 1px solid #334155; margin-bottom: 10px;" alt="Full Tree">
-            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">संपूर्ण वंशावळ पोस्टर</h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">सर्व कुटुंबीय, ७ शाखा, १२ पिढ्या (29,712 × 5,110 px).</p>
+            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">Complete Family Tree Poster</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">All 175 members, 7 branches, 12 generations (29,712 &times; 5,110 px).</p>
             <div style="display: flex; gap: 6px; width: 100%; margin-top: auto;">
               <a href="likhite_full_family_tree_ultra_hd.jpg" download="Murbadkar_Likhite_Full_Tree_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ Ultra HD JPG (7.3MB)</a>
             </div>
@@ -972,23 +978,23 @@
 
           <!-- Card 2: Direct Lineage -->
           <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-            <div style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">मोबाईलसाठी सर्वोत्तम (9:16)</div>
+            <div style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">Mobile Optimized (9:16)</div>
             <img src="likhite_direct_lineage_ultra_hd.jpg" style="width: 100%; height: 140px; object-fit: contain; border-radius: 8px; background: #080d1a; padding: 4px; border: 1px solid #334155; margin-bottom: 10px;" alt="12 Generations Lineage">
-            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">थेट १२ पिढ्यांची परंपरा</h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">तुकाजी ते देवव्रत, विआन व विराज (2400 × 4800 px).</p>
+            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">Direct 12 Generations Poster</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">From Tukaji to Devavrat, Viaan and Viraj (2,400 &times; 4,800 px).</p>
             <div style="display: flex; gap: 6px; width: 100%; margin-top: auto;">
-              <a href="likhite_direct_lineage_ultra_hd.jpg" download="Likhite_12_Generations_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ JPG डाउनलोड</a>
+              <a href="likhite_direct_lineage_ultra_hd.jpg" download="Likhite_12_Generations_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ Download JPG</a>
             </div>
           </div>
 
           <!-- Card 3: Gajanan Branch -->
           <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center;">
-            <div style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">निकटवर्ती कुटुंब (पान १)</div>
+            <div style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">Page 1 Family Circle</div>
             <img src="likhite_gajanan_branch_ultra_hd.jpg" style="width: 100%; height: 140px; object-fit: contain; border-radius: 8px; background: #080d1a; padding: 4px; border: 1px solid #334155; margin-bottom: 10px;" alt="Gajanan Branch">
-            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">गजानन शाखा कुटुंब चार्ट</h3>
-            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">गजानन, चार भाऊ, चुलत भाऊ व देवव्रत परिवार (2800 × 3600 px).</p>
+            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">Gajanan Branch Family Chart</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">Gajanan, 4 brothers, cousins and Devavrat family (2,800 &times; 3,600 px).</p>
             <div style="display: flex; gap: 6px; width: 100%; margin-top: auto;">
-              <a href="likhite_gajanan_branch_ultra_hd.jpg" download="Likhite_Gajanan_Branch_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ JPG डाउनलोड</a>
+              <a href="likhite_gajanan_branch_ultra_hd.jpg" download="Likhite_Gajanan_Branch_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ Download JPG</a>
             </div>
           </div>
         </div>
@@ -1000,45 +1006,45 @@
   <div class="modal-overlay" id="scansModal">
     <div class="modal-content">
       <div class="modal-header">
-        <div style="font-size: 1.1rem; font-weight: 700;">मूळ हस्तलिखित वंशावळ पत्रके (Original Handwritten Scans)</div>
+        <div style="font-size: 1.1rem; font-weight: 700;">📜 Original 1992 Handwritten Manuscript Sheets</div>
         <button class="drawer-close" id="modalClose">&times;</button>
       </div>
       <div class="modal-body">
         <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
-          मूळ संकलन: श्री. भालचंद्र मोरेश्वर लिखिते व श्री. अरविंद भास्कर लिखिते (२८ नोव्हेंबर १९९२):
+          Compiled on November 28, 1992 by Bhalchandra Moreshwar Likhite &amp; Arvind Bhaskar Likhite (Click to view high-res original):
         </p>
         <div class="scan-gallery">
           <div class="scan-card" onclick="window.open('Page 1.jpg', '_blank')">
             <img src="p1_2500.jpg" alt="Page 1">
-            <div class="scan-card-info">पान १: गजानन शाखा (देवव्रत पिढी)</div>
+            <div class="scan-card-info">Sheet 1: Gajanan Branch (Devavrat Lineage)</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 2.jpg', '_blank')">
             <img src="p2_2500.jpg" alt="Page 2">
-            <div class="scan-card-info">पान २: भाऊराव, मोरेश्वर, विनायक शाखा</div>
+            <div class="scan-card-info">Sheet 2: Bhaurao, Moreshwar &amp; Vinayak Branches</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 3.jpg', '_blank')">
             <img src="p3_2500.jpg" alt="Page 3">
-            <div class="scan-card-info">पान ३: बाळकृष्ण, दामोदर, शंकर, सखाराम शाखा</div>
+            <div class="scan-card-info">Sheet 3: Balkrishna, Damodar, Shankar &amp; Sakharam Branches</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 4.jpg', '_blank')">
             <img src="p4_2500.jpg" alt="Page 4">
-            <div class="scan-card-info">पान ४: आप्पाजी, प्रभाकर मुले, यशवंत शाखा</div>
+            <div class="scan-card-info">Sheet 4: Appaji, Prabhakar Sons &amp; Yashwant Branches</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 5.jpg', '_blank')">
             <img src="p5_2500.jpg" alt="Page 5">
-            <div class="scan-card-info">पान ५: मूळ तुकाजी, आबाजी, रघुनाथ, जयराम शाखा</div>
+            <div class="scan-card-info">Sheet 5: Ancestral Roots (Tukaji, Abaji, Raghunath) &amp; Jayaram Branch</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 6.jpg', '_blank')">
             <img src="p6_2500.jpg" alt="Page 6">
-            <div class="scan-card-info">पान ६: गोविंद/वासुदेव, महादेव शाखा</div>
+            <div class="scan-card-info">Sheet 6: Govind/Vasudev &amp; Mahadev Branches</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 7.jpg', '_blank')">
             <img src="p7_2500.jpg" alt="Page 7">
-            <div class="scan-card-info">पान ७: विठ्ठल शाखा, नारायण आरंभ</div>
+            <div class="scan-card-info">Sheet 7: Vitthal Branch &amp; Narayan Start</div>
           </div>
           <div class="scan-card" onclick="window.open('Page 8.jpg', '_blank')">
             <img src="p8_2500.jpg" alt="Page 8">
-            <div class="scan-card-info">पान ८: नारायण शाखा, कुलदैवत, स्वाक्षऱ्या</div>
+            <div class="scan-card-info">Sheet 8: Narayan Branch, Deities &amp; Signatures</div>
           </div>
         </div>
       </div>
@@ -1098,7 +1104,6 @@
         state.parentMap.clear();
         indexData(familyData.tree, null);
 
-        // Update stats
         updateStats();
 
         // Expand all nodes by default
@@ -1271,20 +1276,24 @@
         rect.setAttribute('rx', '10');
         g.appendChild(rect);
 
+        // Devanagari Name (Marathi)
         const textMr = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         textMr.setAttribute('x', '14');
         textMr.setAttribute('y', '27');
         textMr.setAttribute('fill', '#ffffff');
         textMr.setAttribute('font-size', '15');
         textMr.setAttribute('font-weight', '700');
+        textMr.setAttribute('font-family', 'Mukta, sans-serif');
         textMr.textContent = node.name_mr;
         g.appendChild(textMr);
 
+        // English Name
         const textEn = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         textEn.setAttribute('x', '14');
         textEn.setAttribute('y', '44');
         textEn.setAttribute('fill', '#94a3b8');
         textEn.setAttribute('font-size', '11');
+        textEn.setAttribute('font-family', 'Outfit, sans-serif');
         textEn.textContent = node.name_en;
         g.appendChild(textEn);
 
@@ -1299,6 +1308,7 @@
           g.appendChild(bText);
         }
 
+        // Generation Badge
         const genText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
         genText.setAttribute('x', node.width - 10);
         genText.setAttribute('y', '22');
@@ -1306,7 +1316,7 @@
         genText.setAttribute('fill', '#f59e0b');
         genText.setAttribute('font-size', '9');
         genText.setAttribute('font-weight', '700');
-        genText.textContent = `P${node.generation}`;
+        genText.textContent = `Gen ${node.generation}`;
         g.appendChild(genText);
 
         if (node.lineage_ended) {
@@ -1347,12 +1357,12 @@
 
       renderTree();
 
-      let badgesHtml = `<span class="drawer-badge">पिढी (Generation): ${node.generation}</span>`;
+      let badgesHtml = `<span class="drawer-badge">Generation: ${node.generation}</span>`;
       if (node.lineage_ended) {
-        badgesHtml += ` <span class="drawer-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: #ef4444;">✕ वंशखंडित</span>`;
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: #ef4444;">✕ Lineage Ended</span>`;
       }
       if (node.birthdate) {
-        badgesHtml += ` <span class="drawer-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎂 जन्म: ${node.birthdate}</span>`;
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎂 Born: ${node.birthdate}</span>`;
       }
       if (node.note) {
         badgesHtml += ` <span class="drawer-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">${node.note}</span>`;
@@ -1362,7 +1372,7 @@
       if (node.children && node.children.length > 0) {
         childrenHtml = `
           <div class="drawer-section">
-            <div class="drawer-section-title">मुले (Children - ${node.children.length})</div>
+            <div class="drawer-section-title">Children (${node.children.length})</div>
             <div style="display: flex; flex-wrap: wrap; gap: 6px;">
               ${node.children.map(c => `
                 <button class="btn" style="padding: 4px 10px; font-size: 0.8rem;" onclick="jumpToNode('${c.id}')">
@@ -1379,31 +1389,31 @@
         <div class="drawer-name-en">${node.name_en}</div>
         <div style="margin-top: 6px;">${badgesHtml}</div>
 
-        <!-- Action Buttons for Editing and Extending -->
+        <!-- Action Buttons in English -->
         <div class="action-button-group">
           <button class="btn btn-save" style="justify-content: center;" onclick="openEditModal('${node.id}')">
-            ✏️ दुरुस्त करा (Edit)
+            ✏️ Edit Person
           </button>
           <button class="btn btn-user" style="justify-content: center;" onclick="openAddChildModal('${node.id}', 'child')">
-            ➕ मूल जोडा (Add Child)
+            ➕ Add Child
           </button>
           <button class="btn" style="justify-content: center;" onclick="openAddChildModal('${node.id}', 'sibling')">
-            ➕ बंधू/भगिनी (Sibling)
+            ➕ Add Sibling
           </button>
           <button class="btn btn-danger" style="justify-content: center;" onclick="deleteNode('${node.id}')">
-            🗑️ हटवा (Delete)
+            🗑️ Delete
           </button>
         </div>
 
         <div class="drawer-section">
-          <div class="drawer-section-title">थेट पितृ परंपरा (Direct Ancestral Lineage)</div>
+          <div class="drawer-section-title">Direct Ancestral Lineage</div>
           <div class="lineage-chain">
             ${path.map((p, idx) => `
               <div class="lineage-step">
-                <span class="step-gen">P${p.generation}</span>
+                <span class="step-gen">Gen ${p.generation}</span>
                 <strong style="color: ${p.id === node.id ? '#f59e0b' : '#fff'}; cursor: pointer;" onclick="jumpToNode('${p.id}')">${p.name_mr}</strong>
                 <span style="color: var(--text-muted); font-size: 0.8rem;">(${p.name_en})</span>
-                ${idx < path.length - 1 ? '<span class="lineage-arrow">↓</span>' : ''}
+                ${idx < path.length - 1 ? '<span class="lineage-arrow">&darr;</span>' : ''}
               </div>
             `).join('')}
           </div>
@@ -1413,7 +1423,7 @@
 
         <div class="drawer-section">
           <button class="btn btn-user" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="centerOnNode('${node.id}')">
-            कॅमेरा या व्यक्तीवर केंद्रित करा (Center on Canvas)
+            Center Camera on Node
           </button>
         </div>
       `;
@@ -1483,7 +1493,7 @@
       const ended = document.getElementById('editLineageEnded').checked;
 
       if (!nameMr || !nameEn) {
-        alert("कृपया नाव (मराठी व इंग्रजी) भरा.");
+        alert("Please provide both Devanagari and English names.");
         return;
       }
 
@@ -1512,14 +1522,14 @@
 
       const notice = document.getElementById('addRelationNotice');
       if (relType === 'child') {
-        notice.textContent = `${node.name_mr} (${node.name_en}) यांच्या खाली नवीन मूल (Child - पिढी ${node.generation + 1}) जोडले जाईल.`;
+        notice.textContent = `Adding new Child under: ${node.name_mr} (${node.name_en}) &bull; Generation ${node.generation + 1}`;
       } else {
         const parent = state.parentMap.get(nodeId);
         if (!parent) {
-          alert("मूळ पुरुषाचे (तुकाजी) बंधू जोडता येणार नाही.");
+          alert("Cannot add sibling to founding ancestor Tukaji.");
           return;
         }
-        notice.textContent = `${node.name_mr} यांचे बंधू/भगिनी (पिढी ${node.generation}) म्हणून ${parent.name_mr} यांच्या खाली जोडले जाईल.`;
+        notice.textContent = `Adding Sibling of ${node.name_mr} under parent ${parent.name_mr} &bull; Generation ${node.generation}`;
       }
 
       document.getElementById('addChildModal').classList.add('open');
@@ -1534,7 +1544,7 @@
       const note = document.getElementById('addNote').value.trim();
 
       if (!nameMr || !nameEn) {
-        alert("कृपया नाव (मराठी व इंग्रजी) भरा.");
+        alert("Please provide both Devanagari and English names.");
         return;
       }
 
@@ -1545,13 +1555,12 @@
         parentNode = state.allNodesMap.get(targetNodeId);
         gen = parentNode.generation + 1;
       } else {
-        // Sibling: parent is the parent of targetNode
         parentNode = state.parentMap.get(targetNodeId);
         gen = state.allNodesMap.get(targetNodeId).generation;
       }
 
       if (!parentNode) {
-        alert("पालक नोड सापडला नाही.");
+        alert("Parent node not found.");
         return;
       }
 
@@ -1559,7 +1568,6 @@
         parentNode.children = [];
       }
 
-      // Generate unique ID
       const baseSlug = nameEn.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'person';
       const newId = `${baseSlug}_${gen}_${Date.now().toString().slice(-4)}`;
 
@@ -1574,7 +1582,6 @@
 
       parentNode.children.push(newPerson);
 
-      // Re-index tree
       state.allNodesMap.clear();
       state.parentMap.clear();
       indexData(familyData.tree, null);
@@ -1589,7 +1596,7 @@
 
     function deleteNode(nodeId) {
       if (nodeId === familyData.tree.id) {
-        alert("मूळ पुरुष (Tukaji) हटवता येणार नाही.");
+        alert("Cannot delete founding ancestor Tukaji.");
         return;
       }
 
@@ -1599,11 +1606,9 @@
       if (!node || !parent) return;
 
       const hasKids = node.children && node.children.length > 0;
-      let msg = `खात्री आहे का? "${node.name_mr} (${node.name_en})" यांना वंशावळीतून हटवायचे आहे?`;
+      let msg = `Are you sure you want to delete "${node.name_mr} (${node.name_en})" from the tree?`;
       if (hasKids) {
-        msg += `
-
-लक्ष द्या: यांच्याखालील ${node.children.length} मुले आणि संपूर्ण उपशाखा देखील हटवली जाईल!`;
+        msg += `\n\nWarning: ${node.children.length} descendant(s) under this node will also be removed!`;
       }
 
       if (!confirm(msg)) return;
@@ -1622,7 +1627,6 @@
       jumpToNode(parent.id);
     }
 
-    // Export current familyData to JSON file
     function exportJSON() {
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyData, null, 2));
       const downloadAnchor = document.createElement('a');
@@ -1633,7 +1637,6 @@
       downloadAnchor.remove();
     }
 
-    // Import JSON file
     function importJSON(file) {
       const reader = new FileReader();
       reader.onload = function(e) {
@@ -1643,20 +1646,19 @@
             familyData = imported;
             saveToStorage();
             initApp();
-            alert("नवीन वंशावळ यशस्वीरीत्या लोड झाली!");
+            alert("Family tree loaded successfully!");
           } else {
-            alert("अवैध JSON फाईल स्वरूप (Invalid Tree Data).");
+            alert("Invalid JSON family tree file format.");
           }
         } catch (err) {
-          alert("JSON फाईल वाचण्यात त्रुटी आली: " + err.message);
+          alert("Error reading JSON file: " + err.message);
         }
       };
       reader.readAsText(file);
     }
 
-    // Reset to Default
     function resetToDefault() {
-      if (confirm("तुम्ही केलेले सर्व बदल पुसून मूळ वंशावळीवर रीसेट करायचे आहे का?")) {
+      if (confirm("Reset all edits and return to original family tree?")) {
         localStorage.removeItem(STORAGE_KEY);
         familyData = JSON.parse(JSON.stringify(DEFAULT_DATA));
         document.getElementById('storageBadge').style.display = 'none';
@@ -1856,15 +1858,15 @@
         ).slice(0, 10);
 
         if (matches.length === 0) {
-          searchResults.innerHTML = '<div style="padding: 10px; color: var(--text-muted); font-size: 0.85rem;">काही आढळले नाही (No matches found)</div>';
+          searchResults.innerHTML = '<div style="padding: 10px; color: var(--text-muted); font-size: 0.85rem;">No matches found</div>';
         } else {
           searchResults.innerHTML = matches.map(m => `
             <div class="search-item" onclick="jumpToNode('${m.id}'); document.getElementById('searchResults').style.display='none';">
               <div>
-                <strong style="color: #fff;">${m.name_mr}</strong>
+                <strong style="color: #fff; font-family: Mukta, sans-serif;">${m.name_mr}</strong>
                 <span style="color: var(--accent); font-size: 0.8rem; margin-left: 6px;">(${m.name_en})</span>
               </div>
-              <span style="font-size: 0.72rem; color: var(--text-muted);">P${m.generation}</span>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Gen ${m.generation}</span>
             </div>
           `).join('');
         }
