@@ -1,0 +1,1889 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>मुरबाडकर लिखिते वंशावळ | Murbadkar Likhite Family Tree (Interactive &amp; Editable)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Mukta:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary: #0a0f1d;
+      --bg-secondary: #111827;
+      --bg-card: #1e293b;
+      --bg-card-hover: #27354f;
+      --border-color: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #f59e0b;
+      --accent-glow: rgba(245, 158, 11, 0.25);
+      --highlight: #38bdf8;
+      --user-glow: #10b981;
+      --ended-color: #ef4444;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Mukta', 'Outfit', system-ui, -apple-system, sans-serif;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-main);
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top Navigation */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      z-index: 20;
+      flex-shrink: 0;
+    }
+
+    .brand-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .crest {
+      width: 44px;
+      height: 44px;
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .brand-text h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      line-height: 1.2;
+      color: #fff;
+    }
+
+    .brand-text p {
+      font-size: 0.78rem;
+      color: var(--text-muted);
+    }
+
+    .header-pills {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      font-size: 0.8rem;
+    }
+
+    .pill {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 4px 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--text-muted);
+    }
+
+    .pill strong {
+      color: var(--accent);
+    }
+
+    /* Control Toolbar */
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .search-box {
+      position: relative;
+      width: 200px;
+    }
+
+    .search-box input {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 7px 12px 7px 32px;
+      color: #fff;
+      font-size: 0.85rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    .search-results {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      width: 300px;
+      max-height: 380px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      overflow-y: auto;
+      z-index: 50;
+      display: none;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .search-item {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .search-item:hover {
+      background: var(--bg-card-hover);
+    }
+
+    .btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+      white-space: nowrap;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent);
+      color: #fff;
+    }
+
+    .btn-user {
+      background: linear-gradient(135deg, #059669, #10b981);
+      border-color: #10b981;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-user:hover {
+      background: linear-gradient(135deg, #10b981, #34d399);
+    }
+
+    .btn-save {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      border-color: #3b82f6;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn-save:hover {
+      background: linear-gradient(135deg, #3b82f6, #60a5fa);
+    }
+
+    .btn-whatsapp {
+      background: linear-gradient(135deg, #075e54, #128c7e);
+      border-color: #25d366;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .btn-danger {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+      color: #fca5a5;
+    }
+
+    .btn-danger:hover {
+      background: #ef4444;
+      color: #fff;
+    }
+
+    /* Subheader Filters & Tabs */
+    .filter-bar {
+      background: #0d1322;
+      border-bottom: 1px solid var(--border-color);
+      padding: 6px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      font-size: 0.82rem;
+      z-index: 15;
+    }
+
+    .view-mode-tabs {
+      display: flex;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+    }
+
+    .view-mode-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      padding: 5px 14px;
+      border-radius: 6px;
+      font-size: 0.82rem;
+      cursor: pointer;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .view-mode-btn.active {
+      background: var(--accent);
+      color: #000;
+    }
+
+    .branch-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .branch-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .branch-tab {
+      background: transparent;
+      border: 1px solid transparent;
+      color: var(--text-muted);
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .branch-tab:hover {
+      color: var(--text-main);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .branch-tab.active {
+      color: #fff;
+      background: var(--bg-card);
+      border-color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* Storage status pill */
+    #storageBadge {
+      font-size: 0.75rem;
+      color: #34d399;
+      display: none;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* Main Workspace */
+    .workspace {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      cursor: grab;
+      user-select: none;
+      background-image: 
+        radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, rgba(10, 15, 29, 0.95) 100%),
+        linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255,255,255,0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 30px 30px, 30px 30px;
+    }
+
+    .workspace.grabbing {
+      cursor: grabbing;
+    }
+
+    svg#tree-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* Poster Container */
+    #poster-container {
+      display: none;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background: #080d1a;
+      text-align: center;
+      padding: 20px;
+    }
+
+    #poster-img {
+      max-width: none;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      cursor: zoom-in;
+    }
+
+    /* Floating Stats */
+    .floating-stats {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: rgba(17, 24, 39, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 18px;
+      display: flex;
+      gap: 18px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .stat-num {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    .zoom-controls {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(17, 24, 39, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 10;
+    }
+
+    .zoom-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.15s;
+    }
+
+    .zoom-btn:hover {
+      background: var(--accent);
+      color: #000;
+    }
+
+    /* Tree Node Styling - UNIFORM STYLING */
+    .node-group {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .node-group:hover .node-rect {
+      stroke: var(--accent);
+      stroke-width: 2.5px;
+      filter: drop-shadow(0 0 12px var(--accent-glow));
+    }
+
+    .node-rect {
+      fill: var(--bg-card);
+      stroke: var(--border-color);
+      stroke-width: 1.5px;
+      rx: 10px;
+      transition: all 0.25s;
+    }
+
+    .node-group.lineage-ended .node-rect {
+      stroke: var(--ended-color);
+      stroke-dasharray: 4 2;
+    }
+
+    .node-group.selected-node .node-rect {
+      stroke: var(--accent);
+      stroke-width: 3px;
+      filter: drop-shadow(0 0 14px var(--accent-glow));
+    }
+
+    .tree-link {
+      fill: none;
+      stroke: #334155;
+      stroke-width: 2px;
+      transition: all 0.3s;
+    }
+
+    /* Detail Drawer */
+    .detail-drawer {
+      position: absolute;
+      top: 0;
+      right: -440px;
+      width: 420px;
+      height: 100%;
+      background: rgba(17, 24, 39, 0.98);
+      backdrop-filter: blur(15px);
+      border-left: 1px solid var(--border-color);
+      box-shadow: -10px 0 30px rgba(0,0,0,0.6);
+      z-index: 30;
+      display: flex;
+      flex-direction: column;
+      transition: right 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .detail-drawer.open {
+      right: 0;
+    }
+
+    .drawer-header {
+      padding: 18px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-close {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .drawer-close:hover {
+      background: rgba(255,255,255,0.05);
+      color: #fff;
+    }
+
+    .drawer-body {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .drawer-name-mr {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #fff;
+      line-height: 1.1;
+    }
+
+    .drawer-name-en {
+      font-size: 1.1rem;
+      color: var(--accent);
+      margin-top: 4px;
+    }
+
+    .drawer-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      margin-top: 8px;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    .drawer-section {
+      margin-top: 20px;
+    }
+
+    .drawer-section-title {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .lineage-chain {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .lineage-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.88rem;
+    }
+
+    .lineage-step .step-gen {
+      background: rgba(255,255,255,0.08);
+      font-size: 0.7rem;
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--text-muted);
+    }
+
+    .lineage-arrow {
+      color: var(--accent);
+      font-size: 12px;
+      margin-left: 10px;
+    }
+
+    .action-button-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 15px;
+    }
+
+    /* Modal Form Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-content {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      width: 90vw;
+      max-width: 580px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.7);
+    }
+
+    .modal-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-body {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .form-control {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 9px 14px;
+      color: #fff;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-control:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 2px var(--accent-glow);
+    }
+
+    .form-check {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+
+    .form-check input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent);
+    }
+
+    .modal-footer {
+      padding: 16px 24px;
+      border-top: 1px solid var(--border-color);
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      background: rgba(0,0,0,0.2);
+    }
+
+    .scan-gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+
+    .scan-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .scan-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .scan-card img {
+      width: 100%;
+      height: 180px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .scan-card-info {
+      padding: 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header>
+    <div class="brand-area">
+      <div class="crest">लि</div>
+      <div class="brand-text">
+        <h1>मुरबाडकर लिखिते वंशावळ</h1>
+        <p>Murbadkar Likhite Family Tree (Interactive &amp; Editable)</p>
+      </div>
+    </div>
+
+    <div class="header-pills">
+      <div class="pill">कुलदैवत: <strong>व्याघ्रांबरी, मुंजावती</strong></div>
+      <div class="pill">गोत्र: <strong>गंधमादन</strong></div>
+      <div id="storageBadge">● बदल सेव्ह झाले आहेत</div>
+    </div>
+
+    <div class="toolbar">
+      <!-- Search Box -->
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search / शोधा...">
+        <div class="search-results" id="searchResults"></div>
+      </div>
+
+      <!-- Quick Locate User Button -->
+      <button class="btn btn-user" id="btnLocateUser" title="देवव्रत यांच्या शाखेकडे जा">
+        <span>🌟</span> देवव्रत (Devavrat)
+      </button>
+
+      <!-- Save & Export JSON Button -->
+      <button class="btn btn-save" id="btnExportJSON" title="नवीन नोंदी फाईलमध्ये जतन करा">
+        <span>💾</span> Export JSON
+      </button>
+
+      <!-- Import JSON Button -->
+      <label class="btn" title="जतन केलेली JSON फाईल लोड करा" style="cursor: pointer;">
+        <span>📂</span> Import JSON
+        <input type="file" id="importFileInput" accept=".json" style="display: none;">
+      </label>
+
+      <!-- WhatsApp Modal Trigger -->
+      <button class="btn btn-whatsapp" id="btnOpenWhatsApp">
+        <span>📲</span> WhatsApp फोटो
+      </button>
+
+      <!-- View Scans Modal Trigger -->
+      <button class="btn" id="btnOpenScans">
+        <span>📜</span> मूळ पत्रके (Scans)
+      </button>
+    </div>
+  </header>
+
+  <!-- Filter & Mode Bar -->
+  <div class="filter-bar">
+    <!-- View Mode Switch -->
+    <div class="view-mode-tabs">
+      <button class="view-mode-btn active" id="tabModeTree">🌟 परस्परसंवादी वृक्ष (Interactive)</button>
+      <button class="view-mode-btn" id="tabModePoster">📜 संपूर्ण वंशावळ पोस्टर (Full Poster)</button>
+    </div>
+
+    <!-- Branch Filtering (Tree Mode) -->
+    <div class="branch-tabs" id="branchTabs">
+      <button class="branch-tab active" data-branch="all">सर्व शाखा (All Branches)</button>
+      <button class="branch-tab" data-branch="appaji">आप्पाजी शाखा</button>
+      <button class="branch-tab" data-branch="jayaram">जयराम शाखा</button>
+      <button class="branch-tab" data-branch="govind">गोविंद/वासुदेव शाखा</button>
+      <button class="branch-tab" data-branch="mahadev">महादेव शाखा</button>
+      <button class="branch-tab" data-branch="vitthal">विठ्ठल शाखा</button>
+      <button class="branch-tab" data-branch="narayan">नारायण शाखा</button>
+    </div>
+
+    <div style="display: flex; gap: 8px;">
+      <button class="btn" id="btnResetTree" title="मूळ वंशावळीवर रीसेट करा" style="color: var(--text-muted);">
+        🔄 मूळ रीसेट
+      </button>
+      <button class="btn" id="btnFitScreen">Fit View (स्क्रीनवर बसवा)</button>
+      <button class="btn" id="btnOrientation">Horizontal ⇄ Vertical</button>
+    </div>
+  </div>
+
+  <!-- Main Workspace -->
+  <main class="workspace" id="workspace">
+    <!-- SVG Tree Canvas -->
+    <svg id="tree-canvas">
+      <g id="viewport">
+        <g id="links-layer"></g>
+        <g id="nodes-layer"></g>
+      </g>
+    </svg>
+
+    <!-- Poster Viewer (Alternative Mode) -->
+    <div id="poster-container">
+      <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 12px;">
+        संपूर्ण १७५ कुटुंबीय व १२ पिढ्यांचे हाय-रिझोल्यूशन पोस्टर (29,712 × 5,110 px) • झूम करण्यासाठी क्लिक करा:
+      </p>
+      <img src="likhite_full_family_tree_ultra_hd.jpg" id="poster-img" alt="Full Family Tree Poster">
+    </div>
+
+    <!-- Floating Stats -->
+    <div class="floating-stats" id="floatingStats">
+      <div class="stat-item">
+        <div class="stat-num" id="statMembers">175</div>
+        <div class="stat-label">एकूण कुटुंबीय (Members)</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num" id="statGens">12</div>
+        <div class="stat-label">पिढ्या (Generations)</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">7</div>
+        <div class="stat-label">मुख्य शाखा (Branches)</div>
+      </div>
+    </div>
+
+    <!-- Zoom & Navigation Controls -->
+    <div class="zoom-controls" id="zoomControls">
+      <button class="zoom-btn" id="btnZoomIn" title="Zoom In">+</button>
+      <button class="zoom-btn" id="btnZoomOut" title="Zoom Out">−</button>
+      <button class="zoom-btn" id="btnResetZoom" title="Reset View">⊙</button>
+    </div>
+  </main>
+
+  <!-- Member Detail Drawer -->
+  <aside class="detail-drawer" id="detailDrawer">
+    <div class="drawer-header">
+      <span style="font-size: 0.85rem; color: var(--text-muted); font-weight: 600;">कुटुंबीय तपशील (Member Details)</span>
+      <button class="drawer-close" id="drawerClose">&times;</button>
+    </div>
+    <div class="drawer-body" id="drawerContent">
+      <!-- Populated dynamically -->
+    </div>
+  </aside>
+
+  <!-- Modal: Edit Member Info -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="font-size: 1.1rem; font-weight: 700;">✏️ माहिती दुरुस्त करा (Edit Person)</div>
+        <button class="drawer-close" id="editModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="editNodeId">
+        <div class="form-group">
+          <label>नाव (मराठी) / Name in Devanagari *</label>
+          <input type="text" class="form-control" id="editNameMr" placeholder="उदा. देवव्रत">
+        </div>
+        <div class="form-group">
+          <label>Name (English) / इंग्रजी नाव *</label>
+          <input type="text" class="form-control" id="editNameEn" placeholder="e.g. Devavrat">
+        </div>
+        <div class="form-group">
+          <label>जन्म तारीख (Birthdate)</label>
+          <input type="text" class="form-control" id="editBirthdate" placeholder="उदा. 15 ऑगस्ट 1985 किंवा 1985-08-15">
+        </div>
+        <div class="form-group">
+          <label>टीप / शहर / व्यवसाय (Notes / Location)</label>
+          <input type="text" class="form-control" id="editNote" placeholder="उदा. नागपूर / मुंबई / सह-संकलक">
+        </div>
+        <label class="form-check">
+          <input type="checkbox" id="editLineageEnded">
+          <span style="font-size: 0.88rem; color: var(--text-muted);">वंशखंडित (Lineage ended / no male heirs ✕)</span>
+        </label>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelEdit">रद्द करा (Cancel)</button>
+        <button class="btn btn-save" id="btnSaveEdit">जतन करा (Save Changes)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Add Child / Extend Tree -->
+  <div class="modal-overlay" id="addChildModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="font-size: 1.1rem; font-weight: 700;">➕ नवीन व्यक्ती जोडा (Add New Entry)</div>
+        <button class="drawer-close" id="addChildModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="addParentNodeId">
+        <input type="hidden" id="addRelationType" value="child">
+        
+        <p style="font-size: 0.85rem; color: var(--accent); margin-bottom: 14px;" id="addRelationNotice">
+          पालक: तुकाजी (पिढी १) यांच्या खाली नवीन मूल जोडले जाईल.
+        </p>
+
+        <div class="form-group">
+          <label>नाव (मराठी) / Name in Devanagari *</label>
+          <input type="text" class="form-control" id="addNameMr" placeholder="उदा. विआन">
+        </div>
+        <div class="form-group">
+          <label>Name (English) / इंग्रजी नाव *</label>
+          <input type="text" class="form-control" id="addNameEn" placeholder="e.g. Viaan">
+        </div>
+        <div class="form-group">
+          <label>जन्म तारीख (Birthdate)</label>
+          <input type="text" class="form-control" id="addBirthdate" placeholder="उदा. 2021-03-25 किंवा 25 मार्च 2021">
+        </div>
+        <div class="form-group">
+          <label>टीप / शहर (Notes / City)</label>
+          <input type="text" class="form-control" id="addNote" placeholder="उदा. पुणे / अमेरिका">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" id="btnCancelAddChild">रद्द करा (Cancel)</button>
+        <button class="btn btn-user" id="btnSaveNewChild">वंशावळीत जोडा (Add to Tree)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- WhatsApp Export Modal -->
+  <div class="modal-overlay" id="whatsappModal">
+    <div class="modal-content" style="max-width: 950px; height: auto; max-height: 90vh;">
+      <div class="modal-header">
+        <div style="font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 8px;">
+          <span style="color: #25d366; font-size: 1.4rem;">📲</span> व्हॉट्सअ‍ॅपवर शेअर करण्यासाठी फोटो (WhatsApp Ready Exports)
+        </div>
+        <button class="drawer-close" id="whatsappModalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.92rem; color: var(--text-muted); margin-bottom: 20px;">
+          खालील चित्रे खास मोबाईल व व्हॉट्सअ‍ॅपवर पाठवण्यासाठी उच्च दर्जाच्या रिझोल्यूशनमध्ये तयार केली आहेत:
+        </p>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px;">
+          <!-- Card 1: Complete Full Tree Poster -->
+          <div style="background: var(--bg-card); border: 2px solid var(--accent); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <div style="background: rgba(245, 158, 11, 0.2); color: #fbbf24; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">सर्वोच्च गुणवत्ता (Full Tree)</div>
+            <img src="likhite_full_family_tree_ultra_hd.jpg" style="width: 100%; height: 140px; object-fit: cover; border-radius: 8px; background: #080d1a; padding: 4px; border: 1px solid #334155; margin-bottom: 10px;" alt="Full Tree">
+            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">संपूर्ण वंशावळ पोस्टर</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">सर्व कुटुंबीय, ७ शाखा, १२ पिढ्या (29,712 × 5,110 px).</p>
+            <div style="display: flex; gap: 6px; width: 100%; margin-top: auto;">
+              <a href="likhite_full_family_tree_ultra_hd.jpg" download="Murbadkar_Likhite_Full_Tree_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ Ultra HD JPG (7.3MB)</a>
+            </div>
+          </div>
+
+          <!-- Card 2: Direct Lineage -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <div style="background: rgba(16, 185, 129, 0.2); color: #34d399; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">मोबाईलसाठी सर्वोत्तम (9:16)</div>
+            <img src="likhite_direct_lineage_ultra_hd.jpg" style="width: 100%; height: 140px; object-fit: contain; border-radius: 8px; background: #080d1a; padding: 4px; border: 1px solid #334155; margin-bottom: 10px;" alt="12 Generations Lineage">
+            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">थेट १२ पिढ्यांची परंपरा</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">तुकाजी ते देवव्रत, विआन व विराज (2400 × 4800 px).</p>
+            <div style="display: flex; gap: 6px; width: 100%; margin-top: auto;">
+              <a href="likhite_direct_lineage_ultra_hd.jpg" download="Likhite_12_Generations_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ JPG डाउनलोड</a>
+            </div>
+          </div>
+
+          <!-- Card 3: Gajanan Branch -->
+          <div style="background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+            <div style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; padding: 3px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: bold; margin-bottom: 8px;">निकटवर्ती कुटुंब (पान १)</div>
+            <img src="likhite_gajanan_branch_ultra_hd.jpg" style="width: 100%; height: 140px; object-fit: contain; border-radius: 8px; background: #080d1a; padding: 4px; border: 1px solid #334155; margin-bottom: 10px;" alt="Gajanan Branch">
+            <h3 style="font-size: 1rem; font-weight: 700; color: #fff;">गजानन शाखा कुटुंब चार्ट</h3>
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin: 4px 0 12px;">गजानन, चार भाऊ, चुलत भाऊ व देवव्रत परिवार (2800 × 3600 px).</p>
+            <div style="display: flex; gap: 6px; width: 100%; margin-top: auto;">
+              <a href="likhite_gajanan_branch_ultra_hd.jpg" download="Likhite_Gajanan_Branch_Ultra_HD.jpg" class="btn btn-whatsapp" style="flex: 1; justify-content: center; font-size: 0.78rem;">⬇ JPG डाउनलोड</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Original Scans Lightbox Modal -->
+  <div class="modal-overlay" id="scansModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <div style="font-size: 1.1rem; font-weight: 700;">मूळ हस्तलिखित वंशावळ पत्रके (Original Handwritten Scans)</div>
+        <button class="drawer-close" id="modalClose">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+          मूळ संकलन: श्री. भालचंद्र मोरेश्वर लिखिते व श्री. अरविंद भास्कर लिखिते (२८ नोव्हेंबर १९९२):
+        </p>
+        <div class="scan-gallery">
+          <div class="scan-card" onclick="window.open('Page 1.jpg', '_blank')">
+            <img src="p1_2500.jpg" alt="Page 1">
+            <div class="scan-card-info">पान १: गजानन शाखा (देवव्रत पिढी)</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 2.jpg', '_blank')">
+            <img src="p2_2500.jpg" alt="Page 2">
+            <div class="scan-card-info">पान २: भाऊराव, मोरेश्वर, विनायक शाखा</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 3.jpg', '_blank')">
+            <img src="p3_2500.jpg" alt="Page 3">
+            <div class="scan-card-info">पान ३: बाळकृष्ण, दामोदर, शंकर, सखाराम शाखा</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 4.jpg', '_blank')">
+            <img src="p4_2500.jpg" alt="Page 4">
+            <div class="scan-card-info">पान ४: आप्पाजी, प्रभाकर मुले, यशवंत शाखा</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 5.jpg', '_blank')">
+            <img src="p5_2500.jpg" alt="Page 5">
+            <div class="scan-card-info">पान ५: मूळ तुकाजी, आबाजी, रघुनाथ, जयराम शाखा</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 6.jpg', '_blank')">
+            <img src="p6_2500.jpg" alt="Page 6">
+            <div class="scan-card-info">पान ६: गोविंद/वासुदेव, महादेव शाखा</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 7.jpg', '_blank')">
+            <img src="p7_2500.jpg" alt="Page 7">
+            <div class="scan-card-info">पान ७: विठ्ठल शाखा, नारायण आरंभ</div>
+          </div>
+          <div class="scan-card" onclick="window.open('Page 8.jpg', '_blank')">
+            <img src="p8_2500.jpg" alt="Page 8">
+            <div class="scan-card-info">पान ८: नारायण शाखा, कुलदैवत, स्वाक्षऱ्या</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Embedded Family Tree Data
+    const DEFAULT_DATA = {"metadata": {"title_mr": "मुरबाडकर लिखिते वंशावळ", "title_en": "Murbadkar Likhite Family Tree", "kuladaivat": "व्याघ्रांबरी, मुंजावती (Vyaghrambari, Munjawati)", "gotra": "गंधमादन (Gandhamadan)", "symbol_x": "वंशखंडित (Lineage ended / no male descendants)", "compilers": ["श्री. भालचंद्र मोरेश्वर लिखिते (Shri Bhalchandra Moreshwar Likhite)", "श्री. अरविंद भास्कर लिखिते (Shri Arvind Bhaskar Likhite)"], "assistance": ["श्री. विनायक शंकर लिखिते (Shri Vinayak Shankar Likhite)", "श्री. रमाकांत बाळकृष्ण लिखिते (Shri Ramakant Balkrishna Likhite)"], "date": "२८ नोव्हेंबर १९९२ (28 November 1992)", "source_scans": "Page 1.jpg to Page 8.jpg (LikhiteFamilyTree.pptx / LikhiteFamilyTree.pdf)"}, "tree": {"id": "tukaji_1", "name_mr": "तुकाजी", "name_en": "Tukaji", "generation": 1, "children": [{"id": "abaji_2", "name_mr": "आबाजी", "name_en": "Abaji", "generation": 2, "children": [{"id": "raghunath_3", "name_mr": "रघुनाथ", "name_en": "Raghunath", "generation": 3, "children": [{"id": "appaji_4", "name_mr": "आप्पाजी", "name_en": "Appaji", "generation": 4, "branch_name": "आप्पाजी शाखा (Appaji Branch)", "children": [{"id": "balkrishna_5", "name_mr": "बाळकृष्ण", "name_en": "Balkrishna", "generation": 5, "children": [{"id": "bhaurao_6", "name_mr": "भाऊराव", "name_en": "Bhaurao", "generation": 6, "children": [{"id": "gajanan_7", "name_mr": "गजानन", "name_en": "Gajanan", "generation": 7, "children": [{"id": "ramchandra_8_g", "name_mr": "रामचंद्र", "name_en": "Ramchandra", "generation": 8, "children": [{"id": "ulhas_9_r", "name_mr": "उल्हास", "name_en": "Ulhas", "generation": 9, "lineage_ended": true}, {"id": "anand_9", "name_mr": "आनंद", "name_en": "Anand", "generation": 9, "children": [{"id": "ajay_10", "name_mr": "अजय", "name_en": "Ajay", "generation": 10, "children": [{"id": "devavrat_11", "name_mr": "देवव्रत", "name_en": "Devavrat", "generation": 11, "is_user": true, "children": [{"id": "viaan_12", "name_mr": "विआन", "name_en": "Viaan", "generation": 12}, {"id": "viraj_12", "name_mr": "विराज", "name_en": "Viraj", "generation": 12}]}, {"id": "rigved_11", "name_mr": "ऋग्वेद", "name_en": "Rigved", "generation": 11}]}]}, {"id": "milind_9_r", "name_mr": "मिलिंद", "name_en": "Milind", "generation": 9}, {"id": "shashikant_9", "name_mr": "शशीकांत", "name_en": "Shashikant", "generation": 9, "children": [{"id": "akshay_10_s", "name_mr": "अक्षय", "name_en": "Akshay", "generation": 10}]}]}, {"id": "laxman_8_g", "name_mr": "लक्ष्मण", "name_en": "Laxman", "generation": 8, "children": [{"id": "shirish_9", "name_mr": "शिरीष", "name_en": "Shirish", "generation": 9}, {"id": "surendra_9", "name_mr": "सुरेंद्र", "name_en": "Surendra", "generation": 9}]}, {"id": "rajaram_8_g", "name_mr": "राजाराम", "name_en": "Rajaram", "generation": 8, "lineage_ended": true}, {"id": "mukund_8", "name_mr": "मुकुन्द", "name_en": "Mukund", "generation": 8, "children": [{"id": "ashutosh_9", "name_mr": "आशुतोष", "name_en": "Ashutosh", "generation": 9}, {"id": "sagar_9", "name_mr": "सागर", "name_en": "Sagar", "generation": 9, "children": [{"id": "madhuresh_10", "name_mr": "मधुरेश", "name_en": "Madhuresh", "generation": 10}]}]}]}, {"id": "moreshwar_7", "name_mr": "मोरेश्वर", "name_en": "Moreshwar", "generation": 7, "children": [{"id": "chintaman_8", "name_mr": "चिंतामण", "name_en": "Chintaman", "generation": 8, "children": [{"id": "sanjay_9_c", "name_mr": "संजय", "name_en": "Sanjay", "generation": 9, "children": [{"id": "saurabh_10", "name_mr": "सौरभ", "name_en": "Saurabh", "generation": 10}]}]}, {"id": "bhalchandra_8", "name_mr": "भालचंद्र", "name_en": "Bhalchandra", "generation": 8, "note": "सह-संकलक (Co-compiler 1992)", "children": [{"id": "ajay_9_b", "name_mr": "अजय", "name_en": "Ajay", "generation": 9}]}, {"id": "kamalakar_8", "name_mr": "कमलाकर", "name_en": "Kamalakar", "generation": 8, "children": [{"id": "sandeep_9_k", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 9}]}, {"id": "purushottam_8_m", "name_mr": "पुरुषोत्तम", "name_en": "Purushottam", "generation": 8, "children": [{"id": "jitendra_9", "name_mr": "जितेन्द्र", "name_en": "Jitendra", "generation": 9}, {"id": "ashish_9", "name_mr": "आशिष", "name_en": "Ashish", "generation": 9}, {"id": "abhijit_9", "name_mr": "अभिजीत", "name_en": "Abhijit", "generation": 9}]}, {"id": "madhav_8_m", "name_mr": "माधव", "name_en": "Madhav", "generation": 8, "children": [{"id": "prasad_9", "name_mr": "प्रसाद", "name_en": "Prasad", "generation": 9}]}]}, {"id": "vinayak_7", "name_mr": "विनायक", "name_en": "Vinayak", "generation": 7, "children": [{"id": "chandrakant_8", "name_mr": "चंद्रकांत", "name_en": "Chandrakant", "generation": 8, "lineage_ended": true}, {"id": "anil_8_v", "name_mr": "अनिल", "name_en": "Anil", "generation": 8, "children": [{"id": "santosh_9_a", "name_mr": "संतोष", "name_en": "Santosh", "generation": 9}]}, {"id": "ashok_8_v", "name_mr": "अशोक", "name_en": "Ashok", "generation": 8}]}]}, {"id": "damodar_6", "name_mr": "दामोदर", "name_en": "Damodar", "generation": 6, "lineage_ended": true, "children": [{"id": "vinayak_7_d", "name_mr": "विनायक", "name_en": "Vinayak", "generation": 7, "children": [{"id": "pradeep_8", "name_mr": "प्रदीप", "name_en": "Pradeep", "generation": 8}, {"id": "praveen_8", "name_mr": "प्रवीण", "name_en": "Praveen", "generation": 8, "children": [{"id": "gaurav_9", "name_mr": "गौरव", "name_en": "Gaurav", "generation": 9}]}, {"id": "prafulla_8", "name_mr": "प्रफुल्ल", "name_en": "Prafulla", "generation": 8, "children": [{"id": "praneet_9", "name_mr": "प्रणीत", "name_en": "Praneet", "generation": 9}]}]}]}, {"id": "shankar_6", "name_mr": "शंकर", "name_en": "Shankar", "generation": 6, "children": [{"id": "balkrishna_7_s", "name_mr": "बाळकृष्ण", "name_en": "Balkrishna", "generation": 7, "children": [{"id": "sham_8_b", "name_mr": "शाम", "name_en": "Sham", "generation": 8, "lineage_ended": true}, {"id": "rajendra_8", "name_mr": "राजेंद्र", "name_en": "Rajendra", "generation": 8, "children": [{"id": "paritosh_9", "name_mr": "परितोष", "name_en": "Paritosh", "generation": 9}]}]}, {"id": "ramakant_7_s", "name_mr": "रमाकांत", "name_en": "Ramakant", "generation": 7, "note": "साहाय्यक (Contributor 1992)", "children": [{"id": "mahendra_8", "name_mr": "महेंद्र", "name_en": "Mahendra", "generation": 8, "children": [{"id": "akshay_9_m", "name_mr": "अक्षय", "name_en": "Akshay", "generation": 9}]}]}]}, {"id": "sakharam_6_b", "name_mr": "सखाराम", "name_en": "Sakharam", "generation": 6, "children": [{"id": "prabhakar_7", "name_mr": "प्रभाकर", "name_en": "Prabhakar", "generation": 7, "children": [{"id": "dattatraya_8_p", "name_mr": "दत्तात्रेय", "name_en": "Dattatraya", "generation": 8, "children": [{"id": "pramod_9", "name_mr": "प्रमोद", "name_en": "Pramod", "generation": 9, "lineage_ended": true}, {"id": "niwas_9", "name_mr": "निवास", "name_en": "Niwas", "generation": 9, "children": [{"id": "chaitanya_10", "name_mr": "चैतन्य", "name_en": "Chaitanya", "generation": 10}]}]}, {"id": "vasant_8_p", "name_mr": "वसंत", "name_en": "Vasant", "generation": 8, "children": [{"id": "avinash_9", "name_mr": "अविनाश", "name_en": "Avinash", "generation": 9}]}, {"id": "purushottam_8_p", "name_mr": "पुरुषोत्तम", "name_en": "Purushottam", "generation": 8, "children": [{"id": "anil_9_pu", "name_mr": "अनिल", "name_en": "Anil", "generation": 9, "children": [{"id": "sannil_10", "name_mr": "संनिल", "name_en": "Sannil", "generation": 10}]}, {"id": "ajay_9_pu", "name_mr": "अजय", "name_en": "Ajay", "generation": 9, "children": [{"id": "shakun_10", "name_mr": "शकुन", "name_en": "Shakun", "generation": 10}]}]}, {"id": "anant_8_p", "name_mr": "अनंत", "name_en": "Anant", "generation": 8, "children": [{"id": "sunil_9_an", "name_mr": "सुनिल", "name_en": "Sunil", "generation": 9}]}, {"id": "keshav_8", "name_mr": "केशव", "name_en": "Keshav", "generation": 8, "children": [{"id": "shekhar_9_k", "name_mr": "शेखर", "name_en": "Shekhar", "generation": 9, "children": [{"id": "sarvesh_10", "name_mr": "सर्वेश", "name_en": "Sarvesh", "generation": 10}]}, {"id": "nitin_9", "name_mr": "नितीन", "name_en": "Nitin", "generation": 9, "children": [{"id": "manil_10", "name_mr": "मनिल", "name_en": "Manil", "generation": 10}]}, {"id": "kiran_9", "name_mr": "किरण", "name_en": "Kiran", "generation": 9, "children": [{"id": "pratik_10", "name_mr": "प्रतिक", "name_en": "Pratik", "generation": 10}]}]}, {"id": "ratnakar_8", "name_mr": "रत्नाकर", "name_en": "Ratnakar", "generation": 8, "children": [{"id": "vijay_9_r", "name_mr": "विजय", "name_en": "Vijay", "generation": 9, "children": [{"id": "nilesh_10_v", "name_mr": "निलेश", "name_en": "Nilesh", "generation": 10}, {"id": "umesh_10", "name_mr": "उमेश", "name_en": "Umesh", "generation": 10}]}, {"id": "sudhir_9", "name_mr": "सुधीर", "name_en": "Sudhir", "generation": 9, "children": [{"id": "pushkar_10", "name_mr": "पुष्कर", "name_en": "Pushkar", "generation": 10}]}, {"id": "dinkar_9", "name_mr": "दिनकर", "name_en": "Dinkar", "generation": 9, "children": [{"id": "vijay_10_d", "name_mr": "विजय", "name_en": "Vijay", "generation": 10, "children": [{"id": "viraj_11", "name_mr": "विराज", "name_en": "Viraj", "generation": 11}, {"id": "vipul_11", "name_mr": "विपूल", "name_en": "Vipul", "generation": 11}]}, {"id": "sunil_10_d", "name_mr": "सुनिल", "name_en": "Sunil", "generation": 10}, {"id": "sham_10_d", "name_mr": "शाम", "name_en": "Sham", "generation": 10}, {"id": "jayant_10_d", "name_mr": "जयंत", "name_en": "Jayant", "generation": 10}]}]}]}]}]}, {"id": "yashwant_5", "name_mr": "यशवंत", "name_en": "Yashwant", "generation": 5, "children": [{"id": "ramkrishna_6", "name_mr": "रामकृष्ण", "name_en": "Ramkrishna", "generation": 6, "children": [{"id": "bhaskar_7_y", "name_mr": "भास्कर", "name_en": "Bhaskar", "generation": 7, "lineage_ended": true}, {"id": "shantaram_7", "name_mr": "शांताराम", "name_en": "Shantaram", "generation": 7, "children": [{"id": "anil_8_sh", "name_mr": "अनिल", "name_en": "Anil", "generation": 8}]}]}]}]}, {"id": "laxman_4_r", "name_mr": "लक्ष्मण", "name_en": "Laxman", "generation": 4, "lineage_ended": true, "branch_name": "लक्ष्मण शाखा (Laxman Branch)"}, {"id": "jayaram_4", "name_mr": "जयराम", "name_en": "Jayaram", "generation": 4, "branch_name": "जयराम शाखा (Jayaram Branch)", "children": [{"id": "ramchandra_5_j", "name_mr": "रामचंद्र", "name_en": "Ramchandra", "generation": 5, "children": [{"id": "sakharam_6_j", "name_mr": "सखाराम", "name_en": "Sakharam", "generation": 6, "children": [{"id": "laxman_7_s", "name_mr": "लक्ष्मण", "name_en": "Laxman", "generation": 7}]}]}, {"id": "parashuram_5", "name_mr": "परशुराम", "name_en": "Parashuram", "generation": 5, "children": [{"id": "bhau_6_p", "name_mr": "भाऊ", "name_en": "Bhau", "generation": 6, "lineage_ended": true}, {"id": "kaluram_trimbak_6", "name_mr": "काळूराम / त्रिंबक", "name_en": "Kaluram / Trimbak", "generation": 6, "children": [{"id": "dattatraya_bhai_7", "name_mr": "दत्तात्रेय / भाई", "name_en": "Dattatraya / Bhai", "generation": 7, "children": [{"id": "shekhar_8_d", "name_mr": "शेखर", "name_en": "Shekhar", "generation": 8}, {"id": "ajit_8", "name_mr": "अजित", "name_en": "Ajit", "generation": 8, "children": [{"id": "abhishek_9", "name_mr": "अभिषेक", "name_en": "Abhishek", "generation": 9}]}, {"id": "kishor_8", "name_mr": "किशोर", "name_en": "Kishor", "generation": 8}, {"id": "rajan_8", "name_mr": "राजन", "name_en": "Rajan", "generation": 8}, {"id": "sandesh_8", "name_mr": "संदेश", "name_en": "Sandesh", "generation": 8, "children": [{"id": "nikhil_9", "name_mr": "निखिल", "name_en": "Nikhil", "generation": 9}]}]}]}]}]}, {"id": "govind_vasudev_4", "name_mr": "गोविंद / वासुदेव", "name_en": "Govind / Vasudev", "generation": 4, "branch_name": "गोविंद / वासुदेव शाखा (Govind / Vasudev Branch)", "children": [{"id": "vishwanath_bhau_5", "name_mr": "विश्वनाथ / भाऊ", "name_en": "Vishwanath / Bhau", "generation": 5, "children": [{"id": "malhar_6", "name_mr": "मल्हार", "name_en": "Malhar", "generation": 6, "lineage_ended": true}, {"id": "krishnanath_6", "name_mr": "कृष्णनाथ", "name_en": "Krishnanath", "generation": 6, "children": [{"id": "deepak_7", "name_mr": "दिपक", "name_en": "Deepak", "generation": 7}, {"id": "rohan_brijesh_7", "name_mr": "रोहन / ब्रिजेश", "name_en": "Rohan / Brijesh", "generation": 7}]}]}, {"id": "ganesh_5", "name_mr": "गणेश", "name_en": "Ganesh", "generation": 5, "lineage_ended": true}]}, {"id": "mahadev_4", "name_mr": "महादेव", "name_en": "Mahadev", "generation": 4, "branch_name": "महादेव शाखा (Mahadev Branch)", "children": [{"id": "dattatraya_bhai_5_m", "name_mr": "दत्तात्रेय / भाई", "name_en": "Dattatraya / Bhai", "generation": 5, "children": [{"id": "balu_6", "name_mr": "बाळू", "name_en": "Balu", "generation": 6, "lineage_ended": true}]}, {"id": "kashinath_5", "name_mr": "काशिनाथ", "name_en": "Kashinath", "generation": 5, "children": [{"id": "manohar_6", "name_mr": "मनोहर", "name_en": "Manohar", "generation": 6, "children": [{"id": "milind_7_ma", "name_mr": "मिलिंद", "name_en": "Milind", "generation": 7}]}, {"id": "shridhar_6", "name_mr": "श्रीधर", "name_en": "Shridhar", "generation": 6, "children": [{"id": "santosh_7_sh", "name_mr": "संतोष", "name_en": "Santosh", "generation": 7}, {"id": "sandeep_7_sh", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 7}]}]}, {"id": "shivram_5", "name_mr": "शिवराम", "name_en": "Shivram", "generation": 5, "children": [{"id": "ulhas_6_s", "name_mr": "उल्हास", "name_en": "Ulhas", "generation": 6, "children": [{"id": "shrikant_7", "name_mr": "श्रीकांत", "name_en": "Shrikant", "generation": 7}]}, {"id": "arun_6_s", "name_mr": "अरुण", "name_en": "Arun", "generation": 6, "children": [{"id": "niranjan_7", "name_mr": "निरंजन", "name_en": "Niranjan", "generation": 7}]}]}]}, {"id": "vitthal_4", "name_mr": "विठ्ठल", "name_en": "Vitthal", "generation": 4, "branch_name": "विठ्ठल शाखा (Vitthal Branch)", "children": [{"id": "ramchandra_baba_5_v", "name_mr": "रामचंद्र / बाबा", "name_en": "Ramchandra / Baba", "generation": 5, "lineage_ended": true}, {"id": "dwarkanath_5", "name_mr": "द्वारकानाथ", "name_en": "Dwarkanath", "generation": 5, "children": [{"id": "madhav_6_d", "name_mr": "माधव", "name_en": "Madhav", "generation": 6, "children": [{"id": "rohan_7_m", "name_mr": "रोहन", "name_en": "Rohan", "generation": 7}]}, {"id": "pandharinath_baba_6", "name_mr": "पंढरीनाथ / बाबा", "name_en": "Pandharinath / Baba", "generation": 6, "children": [{"id": "jayant_7_p", "name_mr": "जयंत", "name_en": "Jayant", "generation": 7}, {"id": "vinay_7", "name_mr": "विनय", "name_en": "Vinay", "generation": 7}]}]}, {"id": "pandurang_anna_5", "name_mr": "पांडुरंग / आण्णा", "name_en": "Pandurang / Anna", "generation": 5, "children": [{"id": "purushottam_chandu_6", "name_mr": "पुरुषोत्तम / चंदू", "name_en": "Purushottam / Chandu", "generation": 6, "children": [{"id": "amit_7_p", "name_mr": "अमित", "name_en": "Amit", "generation": 7, "children": [{"id": "nachiket_8", "name_mr": "नचिकेत", "name_en": "Nachiket", "generation": 8}]}]}]}, {"id": "ramakant_5_v", "name_mr": "रमाकांत", "name_en": "Ramakant", "generation": 5, "children": [{"id": "prashant_6", "name_mr": "प्रशांत", "name_en": "Prashant", "generation": 6}]}, {"id": "sharad_dattatraya_5", "name_mr": "शरद / दत्तात्रेय", "name_en": "Sharad / Dattatraya", "generation": 5, "children": [{"id": "milind_6_sh", "name_mr": "मिलिंद", "name_en": "Milind", "generation": 6, "children": [{"id": "rohan_7_s", "name_mr": "रोहन", "name_en": "Rohan", "generation": 7}]}]}]}, {"id": "narayan_4", "name_mr": "नारायण", "name_en": "Narayan", "generation": 4, "branch_name": "नारायण शाखा (Narayan Branch)", "children": [{"id": "balkrishna_kushabhau_5", "name_mr": "बाळकृष्ण / कुशाभाऊ", "name_en": "Balkrishna / Kushabhau", "generation": 5, "children": [{"id": "shashi_6", "name_mr": "शशी", "name_en": "Shashi", "generation": 6, "children": [{"id": "ajay_7_sh", "name_mr": "अजय", "name_en": "Ajay", "generation": 7}, {"id": "amit_7_sh", "name_mr": "अमित", "name_en": "Amit", "generation": 7}]}, {"id": "vijay_6_b", "name_mr": "विजय", "name_en": "Vijay", "generation": 6, "children": [{"id": "sandeep_7_v", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 7}, {"id": "nilesh_7_v", "name_mr": "निलेश", "name_en": "Nilesh", "generation": 7}]}]}, {"id": "rajaram_5_n", "name_mr": "राजाराम", "name_en": "Rajaram", "generation": 5, "children": [{"id": "madhukar_6", "name_mr": "मधुकर", "name_en": "Madhukar", "generation": 6, "children": [{"id": "vijay_vivek_7", "name_mr": "विजय / विवेक", "name_en": "Vijay / Vivek", "generation": 7}, {"id": "atul_7", "name_mr": "अतुल", "name_en": "Atul", "generation": 7}]}, {"id": "sudhakar_6", "name_mr": "सुधाकर", "name_en": "Sudhakar", "generation": 6, "children": [{"id": "sandeep_7_su", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 7}]}, {"id": "arun_6_r", "name_mr": "अरुण", "name_en": "Arun", "generation": 6, "lineage_ended": true}]}, {"id": "bhaskar_5", "name_mr": "भास्कर", "name_en": "Bhaskar", "generation": 5, "children": [{"id": "vasant_6_bh", "name_mr": "वसंत", "name_en": "Vasant", "generation": 6, "children": [{"id": "nilesh_7_va", "name_mr": "निलेश", "name_en": "Nilesh", "generation": 7}]}, {"id": "arvind_6", "name_mr": "अरविंद", "name_en": "Arvind", "generation": 6, "note": "नागपूर (Nagpur), सह-संकलक (Co-compiler 1992)", "children": [{"id": "aniket_7", "name_mr": "अनिकेत", "name_en": "Aniket", "generation": 7}, {"id": "amaresh_7", "name_mr": "अमरेश", "name_en": "Amaresh", "generation": 7}]}]}]}]}]}]}};
+
+    // Check Local Storage for user modifications
+    const STORAGE_KEY = 'murbadkar_likhite_family_data_v1';
+    let familyData = null;
+
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        familyData = JSON.parse(saved);
+        console.log("Loaded family data from localStorage");
+        document.getElementById('storageBadge').style.display = 'inline-flex';
+      } else {
+        familyData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+    } catch (e) {
+      console.warn("Could not read localStorage:", e);
+      familyData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+    }
+
+    function saveToStorage() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(familyData));
+        document.getElementById('storageBadge').style.display = 'inline-flex';
+      } catch (e) {
+        console.warn("Storage save error:", e);
+      }
+    }
+
+    // App State
+    let state = {
+      orientation: 'horizontal',
+      currentBranch: 'all',
+      scale: 0.85,
+      translateX: 100,
+      translateY: 100,
+      selectedNode: null,
+      expandedNodes: new Set(),
+      allNodesMap: new Map(),
+      parentMap: new Map(),
+      isDragging: false,
+      dragStartX: 0,
+      dragStartY: 0
+    };
+
+    function initApp() {
+      try {
+        state.allNodesMap.clear();
+        state.parentMap.clear();
+        indexData(familyData.tree, null);
+
+        // Update stats
+        updateStats();
+
+        // Expand all nodes by default
+        state.allNodesMap.forEach((_, id) => state.expandedNodes.add(id));
+
+        setupEventListeners();
+        renderTree();
+
+        // Center on Devavrat
+        locateUser();
+      } catch (err) {
+        console.error("Error in initApp:", err);
+      }
+    }
+
+    function updateStats() {
+      const count = state.allNodesMap.size;
+      let maxGen = 1;
+      state.allNodesMap.forEach(n => {
+        if (n.generation > maxGen) maxGen = n.generation;
+      });
+      document.getElementById('statMembers').textContent = count;
+      document.getElementById('statGens').textContent = maxGen;
+    }
+
+    function indexData(node, parent) {
+      state.allNodesMap.set(node.id, node);
+      if (parent) {
+        state.parentMap.set(node.id, parent);
+      }
+      if (node.children) {
+        node.children.forEach(child => indexData(child, node));
+      }
+    }
+
+    function calculateLayout(rootNode) {
+      const nodeWidth = 165;
+      const nodeHeight = 65;
+      const siblingGap = 16;
+      const levelGap = 120;
+
+      let nextPos = 0;
+      const layoutNodes = [];
+      const layoutLinks = [];
+
+      function getVisibleChildren(node) {
+        if (!state.expandedNodes.has(node.id) || !node.children) return [];
+        if (state.currentBranch !== 'all' && node.generation === 3) {
+          return node.children.filter(c => {
+            if (state.currentBranch === 'appaji') return c.id.startsWith('appaji');
+            if (state.currentBranch === 'jayaram') return c.id.startsWith('jayaram');
+            if (state.currentBranch === 'govind') return c.id.startsWith('govind');
+            if (state.currentBranch === 'mahadev') return c.id.startsWith('mahadev');
+            if (state.currentBranch === 'vitthal') return c.id.startsWith('vitthal');
+            if (state.currentBranch === 'narayan') return c.id.startsWith('narayan');
+            return true;
+          });
+        }
+        return node.children;
+      }
+
+      function postOrder(node, depth) {
+        const children = getVisibleChildren(node);
+        const childCoords = [];
+
+        if (children.length === 0) {
+          const pos = nextPos;
+          nextPos += (state.orientation === 'horizontal' ? nodeHeight : nodeWidth) + siblingGap;
+          return { node, depth, pos, children: [] };
+        } else {
+          for (const child of children) {
+            childCoords.push(postOrder(child, depth + 1));
+          }
+          const firstPos = childCoords[0].pos;
+          const lastPos = childCoords[childCoords.length - 1].pos;
+          const pos = (firstPos + lastPos) / 2;
+          return { node, depth, pos, children: childCoords };
+        }
+      }
+
+      const layoutRoot = postOrder(rootNode, 0);
+
+      function flatten(layoutItem) {
+        const depth = layoutItem.depth;
+        const pos = layoutItem.pos;
+        let x, y;
+
+        if (state.orientation === 'horizontal') {
+          x = depth * (nodeWidth + levelGap) + 80;
+          y = pos + 40;
+        } else {
+          x = pos + 40;
+          y = depth * (nodeHeight + levelGap) + 80;
+        }
+
+        const lNode = {
+          ...layoutItem.node,
+          x,
+          y,
+          width: nodeWidth,
+          height: nodeHeight,
+          hasChildren: layoutItem.node.children && layoutItem.node.children.length > 0,
+          isExpanded: state.expandedNodes.has(layoutItem.node.id)
+        };
+        layoutNodes.push(lNode);
+
+        for (const childLayout of layoutItem.children) {
+          const childLNode = flatten(childLayout);
+          layoutLinks.push({
+            source: lNode,
+            target: childLNode,
+            id: `${lNode.id}->${childLNode.id}`
+          });
+        }
+        return lNode;
+      }
+
+      flatten(layoutRoot);
+      return { layoutNodes, layoutLinks };
+    }
+
+    function renderTree() {
+      const { layoutNodes, layoutLinks } = calculateLayout(familyData.tree);
+
+      const linksLayer = document.getElementById('links-layer');
+      const nodesLayer = document.getElementById('nodes-layer');
+
+      linksLayer.innerHTML = '';
+      nodesLayer.innerHTML = '';
+
+      // Draw Links
+      layoutLinks.forEach(link => {
+        const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        let d;
+        if (state.orientation === 'horizontal') {
+          const sx = link.source.x + link.source.width;
+          const sy = link.source.y + link.source.height / 2;
+          const tx = link.target.x;
+          const ty = link.target.y + link.target.height / 2;
+          const mx = (sx + tx) / 2;
+          d = `M ${sx} ${sy} C ${mx} ${sy}, ${mx} ${ty}, ${tx} ${ty}`;
+        } else {
+          const sx = link.source.x + link.source.width / 2;
+          const sy = link.source.y + link.source.height;
+          const tx = link.target.x + link.target.width / 2;
+          const ty = link.target.y;
+          const my = (sy + ty) / 2;
+          d = `M ${sx} ${sy} C ${sx} ${my}, ${tx} ${my}, ${tx} ${ty}`;
+        }
+        path.setAttribute('d', d);
+        path.setAttribute('class', 'tree-link');
+        linksLayer.appendChild(path);
+      });
+
+      // Draw Nodes
+      layoutNodes.forEach(node => {
+        const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+        let classes = 'node-group';
+        if (node.lineage_ended) classes += ' lineage-ended';
+        if (state.selectedNode && state.selectedNode.id === node.id) classes += ' selected-node';
+
+        g.setAttribute('class', classes);
+        g.setAttribute('transform', `translate(${node.x}, ${node.y})`);
+        g.setAttribute('data-id', node.id);
+
+        const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+        rect.setAttribute('class', 'node-rect');
+        rect.setAttribute('width', node.width);
+        rect.setAttribute('height', node.height);
+        rect.setAttribute('rx', '10');
+        g.appendChild(rect);
+
+        const textMr = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        textMr.setAttribute('x', '14');
+        textMr.setAttribute('y', '27');
+        textMr.setAttribute('fill', '#ffffff');
+        textMr.setAttribute('font-size', '15');
+        textMr.setAttribute('font-weight', '700');
+        textMr.textContent = node.name_mr;
+        g.appendChild(textMr);
+
+        const textEn = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        textEn.setAttribute('x', '14');
+        textEn.setAttribute('y', '44');
+        textEn.setAttribute('fill', '#94a3b8');
+        textEn.setAttribute('font-size', '11');
+        textEn.textContent = node.name_en;
+        g.appendChild(textEn);
+
+        // Birthdate snippet if available
+        if (node.birthdate) {
+          const bText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          bText.setAttribute('x', '14');
+          bText.setAttribute('y', '57');
+          bText.setAttribute('fill', '#f59e0b');
+          bText.setAttribute('font-size', '9');
+          bText.textContent = `★ ${node.birthdate}`;
+          g.appendChild(bText);
+        }
+
+        const genText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        genText.setAttribute('x', node.width - 10);
+        genText.setAttribute('y', '22');
+        genText.setAttribute('text-anchor', 'end');
+        genText.setAttribute('fill', '#f59e0b');
+        genText.setAttribute('font-size', '9');
+        genText.setAttribute('font-weight', '700');
+        genText.textContent = `P${node.generation}`;
+        g.appendChild(genText);
+
+        if (node.lineage_ended) {
+          const cross = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+          cross.setAttribute('x', node.width - 14);
+          cross.setAttribute('y', '45');
+          cross.setAttribute('fill', '#ef4444');
+          cross.setAttribute('font-size', '12');
+          cross.setAttribute('font-weight', 'bold');
+          cross.textContent = '✕';
+          g.appendChild(cross);
+        }
+
+        g.addEventListener('click', () => showDetail(node));
+        nodesLayer.appendChild(g);
+      });
+
+      updateViewportTransform();
+    }
+
+    function updateViewportTransform() {
+      const viewport = document.getElementById('viewport');
+      viewport.setAttribute('transform', `translate(${state.translateX}, ${state.translateY}) scale(${state.scale})`);
+    }
+
+    function showDetail(node) {
+      state.selectedNode = node;
+      const drawer = document.getElementById('detailDrawer');
+      const content = document.getElementById('drawerContent');
+
+      // Trace Ancestor Path
+      const path = [];
+      let curr = node;
+      while (curr) {
+        path.unshift(curr);
+        curr = state.parentMap.get(curr.id);
+      }
+
+      renderTree();
+
+      let badgesHtml = `<span class="drawer-badge">पिढी (Generation): ${node.generation}</span>`;
+      if (node.lineage_ended) {
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(239, 68, 68, 0.2); color: #f87171; border-color: #ef4444;">✕ वंशखंडित</span>`;
+      }
+      if (node.birthdate) {
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(245, 158, 11, 0.2); color: #fbbf24;">🎂 जन्म: ${node.birthdate}</span>`;
+      }
+      if (node.note) {
+        badgesHtml += ` <span class="drawer-badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8;">${node.note}</span>`;
+      }
+
+      let childrenHtml = '';
+      if (node.children && node.children.length > 0) {
+        childrenHtml = `
+          <div class="drawer-section">
+            <div class="drawer-section-title">मुले (Children - ${node.children.length})</div>
+            <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+              ${node.children.map(c => `
+                <button class="btn" style="padding: 4px 10px; font-size: 0.8rem;" onclick="jumpToNode('${c.id}')">
+                  ${c.name_mr} (${c.name_en})
+                </button>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      content.innerHTML = `
+        <div class="drawer-name-mr">${node.name_mr}</div>
+        <div class="drawer-name-en">${node.name_en}</div>
+        <div style="margin-top: 6px;">${badgesHtml}</div>
+
+        <!-- Action Buttons for Editing and Extending -->
+        <div class="action-button-group">
+          <button class="btn btn-save" style="justify-content: center;" onclick="openEditModal('${node.id}')">
+            ✏️ दुरुस्त करा (Edit)
+          </button>
+          <button class="btn btn-user" style="justify-content: center;" onclick="openAddChildModal('${node.id}', 'child')">
+            ➕ मूल जोडा (Add Child)
+          </button>
+          <button class="btn" style="justify-content: center;" onclick="openAddChildModal('${node.id}', 'sibling')">
+            ➕ बंधू/भगिनी (Sibling)
+          </button>
+          <button class="btn btn-danger" style="justify-content: center;" onclick="deleteNode('${node.id}')">
+            🗑️ हटवा (Delete)
+          </button>
+        </div>
+
+        <div class="drawer-section">
+          <div class="drawer-section-title">थेट पितृ परंपरा (Direct Ancestral Lineage)</div>
+          <div class="lineage-chain">
+            ${path.map((p, idx) => `
+              <div class="lineage-step">
+                <span class="step-gen">P${p.generation}</span>
+                <strong style="color: ${p.id === node.id ? '#f59e0b' : '#fff'}; cursor: pointer;" onclick="jumpToNode('${p.id}')">${p.name_mr}</strong>
+                <span style="color: var(--text-muted); font-size: 0.8rem;">(${p.name_en})</span>
+                ${idx < path.length - 1 ? '<span class="lineage-arrow">↓</span>' : ''}
+              </div>
+            `).join('')}
+          </div>
+        </div>
+
+        ${childrenHtml}
+
+        <div class="drawer-section">
+          <button class="btn btn-user" style="width: 100%; justify-content: center; margin-top: 10px;" onclick="centerOnNode('${node.id}')">
+            कॅमेरा या व्यक्तीवर केंद्रित करा (Center on Canvas)
+          </button>
+        </div>
+      `;
+
+      drawer.classList.add('open');
+    }
+
+    function jumpToNode(nodeId) {
+      const node = state.allNodesMap.get(nodeId);
+      if (node) {
+        showDetail(node);
+        centerOnNode(nodeId);
+      }
+    }
+
+    function centerOnNode(nodeId) {
+      const g = document.querySelector(`g.node-group[data-id="${nodeId}"]`);
+      if (g) {
+        const transform = g.getAttribute('transform');
+        const match = transform.match(/translate\(([^,]+),\s*([^)]+)\)/);
+        if (match) {
+          const nx = parseFloat(match[1]);
+          const ny = parseFloat(match[2]);
+          const wsWidth = window.innerWidth;
+          const wsHeight = window.innerHeight;
+
+          state.scale = 0.95;
+          state.translateX = wsWidth / 2 - (nx + 80) * state.scale;
+          state.translateY = wsHeight / 2 - (ny + 30) * state.scale;
+          updateViewportTransform();
+        }
+      }
+    }
+
+    function locateUser() {
+      const userNode = Array.from(state.allNodesMap.values()).find(n => n.id === 'devavrat_11') || 
+                       Array.from(state.allNodesMap.values()).find(n => n.is_user);
+      if (userNode) {
+        jumpToNode(userNode.id);
+      }
+    }
+
+    // --- EDIT & EXTEND LOGIC ---
+    function openEditModal(nodeId) {
+      const node = state.allNodesMap.get(nodeId);
+      if (!node) return;
+
+      document.getElementById('editNodeId').value = node.id;
+      document.getElementById('editNameMr').value = node.name_mr || '';
+      document.getElementById('editNameEn').value = node.name_en || '';
+      document.getElementById('editBirthdate').value = node.birthdate || '';
+      document.getElementById('editNote').value = node.note || '';
+      document.getElementById('editLineageEnded').checked = !!node.lineage_ended;
+
+      document.getElementById('editModal').classList.add('open');
+    }
+
+    function saveEditModal() {
+      const nodeId = document.getElementById('editNodeId').value;
+      const node = state.allNodesMap.get(nodeId);
+      if (!node) return;
+
+      const nameMr = document.getElementById('editNameMr').value.trim();
+      const nameEn = document.getElementById('editNameEn').value.trim();
+      const bdate = document.getElementById('editBirthdate').value.trim();
+      const note = document.getElementById('editNote').value.trim();
+      const ended = document.getElementById('editLineageEnded').checked;
+
+      if (!nameMr || !nameEn) {
+        alert("कृपया नाव (मराठी व इंग्रजी) भरा.");
+        return;
+      }
+
+      node.name_mr = nameMr;
+      node.name_en = nameEn;
+      if (bdate) node.birthdate = bdate; else delete node.birthdate;
+      if (note) node.note = note; else delete node.note;
+      node.lineage_ended = ended;
+
+      saveToStorage();
+      document.getElementById('editModal').classList.remove('open');
+      renderTree();
+      showDetail(node);
+    }
+
+    function openAddChildModal(nodeId, relType) {
+      const node = state.allNodesMap.get(nodeId);
+      if (!node) return;
+
+      document.getElementById('addParentNodeId').value = nodeId;
+      document.getElementById('addRelationType').value = relType;
+      document.getElementById('addNameMr').value = '';
+      document.getElementById('addNameEn').value = '';
+      document.getElementById('addBirthdate').value = '';
+      document.getElementById('addNote').value = '';
+
+      const notice = document.getElementById('addRelationNotice');
+      if (relType === 'child') {
+        notice.textContent = `${node.name_mr} (${node.name_en}) यांच्या खाली नवीन मूल (Child - पिढी ${node.generation + 1}) जोडले जाईल.`;
+      } else {
+        const parent = state.parentMap.get(nodeId);
+        if (!parent) {
+          alert("मूळ पुरुषाचे (तुकाजी) बंधू जोडता येणार नाही.");
+          return;
+        }
+        notice.textContent = `${node.name_mr} यांचे बंधू/भगिनी (पिढी ${node.generation}) म्हणून ${parent.name_mr} यांच्या खाली जोडले जाईल.`;
+      }
+
+      document.getElementById('addChildModal').classList.add('open');
+    }
+
+    function saveNewChildModal() {
+      const targetNodeId = document.getElementById('addParentNodeId').value;
+      const relType = document.getElementById('addRelationType').value;
+      const nameMr = document.getElementById('addNameMr').value.trim();
+      const nameEn = document.getElementById('addNameEn').value.trim();
+      const bdate = document.getElementById('addBirthdate').value.trim();
+      const note = document.getElementById('addNote').value.trim();
+
+      if (!nameMr || !nameEn) {
+        alert("कृपया नाव (मराठी व इंग्रजी) भरा.");
+        return;
+      }
+
+      let parentNode = null;
+      let gen = 1;
+
+      if (relType === 'child') {
+        parentNode = state.allNodesMap.get(targetNodeId);
+        gen = parentNode.generation + 1;
+      } else {
+        // Sibling: parent is the parent of targetNode
+        parentNode = state.parentMap.get(targetNodeId);
+        gen = state.allNodesMap.get(targetNodeId).generation;
+      }
+
+      if (!parentNode) {
+        alert("पालक नोड सापडला नाही.");
+        return;
+      }
+
+      if (!parentNode.children) {
+        parentNode.children = [];
+      }
+
+      // Generate unique ID
+      const baseSlug = nameEn.toLowerCase().replace(/[^a-z0-9]/g, '_') || 'person';
+      const newId = `${baseSlug}_${gen}_${Date.now().toString().slice(-4)}`;
+
+      const newPerson = {
+        id: newId,
+        name_mr: nameMr,
+        name_en: nameEn,
+        generation: gen
+      };
+      if (bdate) newPerson.birthdate = bdate;
+      if (note) newPerson.note = note;
+
+      parentNode.children.push(newPerson);
+
+      // Re-index tree
+      state.allNodesMap.clear();
+      state.parentMap.clear();
+      indexData(familyData.tree, null);
+
+      saveToStorage();
+      updateStats();
+
+      document.getElementById('addChildModal').classList.remove('open');
+      renderTree();
+      jumpToNode(newId);
+    }
+
+    function deleteNode(nodeId) {
+      if (nodeId === familyData.tree.id) {
+        alert("मूळ पुरुष (Tukaji) हटवता येणार नाही.");
+        return;
+      }
+
+      const node = state.allNodesMap.get(nodeId);
+      const parent = state.parentMap.get(nodeId);
+
+      if (!node || !parent) return;
+
+      const hasKids = node.children && node.children.length > 0;
+      let msg = `खात्री आहे का? "${node.name_mr} (${node.name_en})" यांना वंशावळीतून हटवायचे आहे?`;
+      if (hasKids) {
+        msg += `
+
+लक्ष द्या: यांच्याखालील ${node.children.length} मुले आणि संपूर्ण उपशाखा देखील हटवली जाईल!`;
+      }
+
+      if (!confirm(msg)) return;
+
+      parent.children = parent.children.filter(c => c.id !== nodeId);
+
+      state.allNodesMap.clear();
+      state.parentMap.clear();
+      indexData(familyData.tree, null);
+
+      saveToStorage();
+      updateStats();
+
+      document.getElementById('detailDrawer').classList.remove('open');
+      renderTree();
+      jumpToNode(parent.id);
+    }
+
+    // Export current familyData to JSON file
+    function exportJSON() {
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(familyData, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute("href", dataStr);
+      downloadAnchor.setAttribute("download", `likhite_family_tree_updated_${new Date().toISOString().slice(0,10)}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+    }
+
+    // Import JSON file
+    function importJSON(file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const imported = JSON.parse(e.target.result);
+          if (imported && imported.tree) {
+            familyData = imported;
+            saveToStorage();
+            initApp();
+            alert("नवीन वंशावळ यशस्वीरीत्या लोड झाली!");
+          } else {
+            alert("अवैध JSON फाईल स्वरूप (Invalid Tree Data).");
+          }
+        } catch (err) {
+          alert("JSON फाईल वाचण्यात त्रुटी आली: " + err.message);
+        }
+      };
+      reader.readAsText(file);
+    }
+
+    // Reset to Default
+    function resetToDefault() {
+      if (confirm("तुम्ही केलेले सर्व बदल पुसून मूळ वंशावळीवर रीसेट करायचे आहे का?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        familyData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+        document.getElementById('storageBadge').style.display = 'none';
+        initApp();
+      }
+    }
+
+    function setupEventListeners() {
+      const ws = document.getElementById('workspace');
+
+      // Drag / Pan
+      ws.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.node-group') || e.target.closest('.floating-stats') || e.target.closest('.zoom-controls') || e.target.closest('#poster-container')) return;
+        state.isDragging = true;
+        state.dragStartX = e.clientX - state.translateX;
+        state.dragStartY = e.clientY - state.translateY;
+        ws.classList.add('grabbing');
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!state.isDragging) return;
+        state.translateX = e.clientX - state.dragStartX;
+        state.translateY = e.clientY - state.dragStartY;
+        updateViewportTransform();
+      });
+
+      window.addEventListener('mouseup', () => {
+        state.isDragging = false;
+        ws.classList.remove('grabbing');
+      });
+
+      // Mouse Wheel Zoom
+      ws.addEventListener('wheel', (e) => {
+        if (document.getElementById('poster-container').style.display === 'block') return;
+        e.preventDefault();
+        const zoomFactor = 1.1;
+        const mouseX = e.clientX;
+        const mouseY = e.clientY;
+
+        let newScale;
+        if (e.deltaY < 0) {
+          newScale = Math.min(state.scale * zoomFactor, 2.5);
+        } else {
+          newScale = Math.max(state.scale / zoomFactor, 0.15);
+        }
+
+        state.translateX = mouseX - (mouseX - state.translateX) * (newScale / state.scale);
+        state.translateY = mouseY - (mouseY - state.translateY) * (newScale / state.scale);
+        state.scale = newScale;
+        updateViewportTransform();
+      }, { passive: false });
+
+      // Zoom Buttons
+      document.getElementById('btnZoomIn').addEventListener('click', () => {
+        state.scale = Math.min(state.scale * 1.25, 2.5);
+        updateViewportTransform();
+      });
+      document.getElementById('btnZoomOut').addEventListener('click', () => {
+        state.scale = Math.max(state.scale / 1.25, 0.15);
+        updateViewportTransform();
+      });
+      document.getElementById('btnResetZoom').addEventListener('click', locateUser);
+
+      // User locate button
+      document.getElementById('btnLocateUser').addEventListener('click', () => {
+        switchToTreeMode();
+        locateUser();
+      });
+
+      // Export / Import / Reset buttons
+      document.getElementById('btnExportJSON').addEventListener('click', exportJSON);
+      document.getElementById('importFileInput').addEventListener('change', (e) => {
+        if (e.target.files && e.target.files[0]) {
+          importJSON(e.target.files[0]);
+        }
+      });
+      document.getElementById('btnResetTree').addEventListener('click', resetToDefault);
+
+      // Edit Modal Actions
+      document.getElementById('btnSaveEdit').addEventListener('click', saveEditModal);
+      document.getElementById('btnCancelEdit').addEventListener('click', () => {
+        document.getElementById('editModal').classList.remove('open');
+      });
+      document.getElementById('editModalClose').addEventListener('click', () => {
+        document.getElementById('editModal').classList.remove('open');
+      });
+
+      // Add Child Modal Actions
+      document.getElementById('btnSaveNewChild').addEventListener('click', saveNewChildModal);
+      document.getElementById('btnCancelAddChild').addEventListener('click', () => {
+        document.getElementById('addChildModal').classList.remove('open');
+      });
+      document.getElementById('addChildModalClose').addEventListener('click', () => {
+        document.getElementById('addChildModal').classList.remove('open');
+      });
+
+      // Branch tabs
+      document.querySelectorAll('.branch-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          switchToTreeMode();
+          document.querySelectorAll('.branch-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          state.currentBranch = tab.dataset.branch;
+          renderTree();
+          if (state.currentBranch === 'appaji') {
+            locateUser();
+          } else {
+            state.translateX = 80;
+            state.translateY = window.innerHeight / 2 - 100;
+            updateViewportTransform();
+          }
+        });
+      });
+
+      // Orientation toggle
+      document.getElementById('btnOrientation').addEventListener('click', () => {
+        switchToTreeMode();
+        state.orientation = state.orientation === 'horizontal' ? 'vertical' : 'horizontal';
+        renderTree();
+        locateUser();
+      });
+
+      // Fit Screen
+      document.getElementById('btnFitScreen').addEventListener('click', () => {
+        switchToTreeMode();
+        state.scale = 0.35;
+        state.translateX = 60;
+        state.translateY = 60;
+        updateViewportTransform();
+      });
+
+      // Drawer close
+      document.getElementById('drawerClose').addEventListener('click', () => {
+        document.getElementById('detailDrawer').classList.remove('open');
+      });
+
+      // View Mode Toggle (Interactive Tree vs Full Poster)
+      function switchToTreeMode() {
+        document.getElementById('tree-canvas').style.display = 'block';
+        document.getElementById('poster-container').style.display = 'none';
+        document.getElementById('tabModeTree').classList.add('active');
+        document.getElementById('tabModePoster').classList.remove('active');
+        document.getElementById('floatingStats').style.display = 'flex';
+        document.getElementById('zoomControls').style.display = 'flex';
+      }
+
+      function switchToPosterMode() {
+        document.getElementById('tree-canvas').style.display = 'none';
+        document.getElementById('poster-container').style.display = 'block';
+        document.getElementById('tabModeTree').classList.remove('active');
+        document.getElementById('tabModePoster').classList.add('active');
+        document.getElementById('floatingStats').style.display = 'none';
+        document.getElementById('zoomControls').style.display = 'none';
+      }
+
+      document.getElementById('tabModeTree').addEventListener('click', switchToTreeMode);
+      document.getElementById('tabModePoster').addEventListener('click', switchToPosterMode);
+
+      // WhatsApp Modal
+      document.getElementById('btnOpenWhatsApp').addEventListener('click', () => {
+        document.getElementById('whatsappModal').classList.add('open');
+      });
+      document.getElementById('whatsappModalClose').addEventListener('click', () => {
+        document.getElementById('whatsappModal').classList.remove('open');
+      });
+
+      // Scans Modal
+      document.getElementById('btnOpenScans').addEventListener('click', () => {
+        document.getElementById('scansModal').classList.add('open');
+      });
+      document.getElementById('modalClose').addEventListener('click', () => {
+        document.getElementById('scansModal').classList.remove('open');
+      });
+
+      // Close modal on click outside
+      window.addEventListener('click', (e) => {
+        if (e.target.classList.contains('modal-overlay')) {
+          e.target.classList.remove('open');
+        }
+      });
+
+      // Live Search
+      const searchInput = document.getElementById('searchInput');
+      const searchResults = document.getElementById('searchResults');
+
+      searchInput.addEventListener('input', (e) => {
+        const query = e.target.value.trim().toLowerCase();
+        if (!query) {
+          searchResults.style.display = 'none';
+          return;
+        }
+
+        const matches = Array.from(state.allNodesMap.values()).filter(n => 
+          n.name_mr.toLowerCase().includes(query) || 
+          n.name_en.toLowerCase().includes(query) ||
+          (n.birthdate && n.birthdate.toLowerCase().includes(query))
+        ).slice(0, 10);
+
+        if (matches.length === 0) {
+          searchResults.innerHTML = '<div style="padding: 10px; color: var(--text-muted); font-size: 0.85rem;">काही आढळले नाही (No matches found)</div>';
+        } else {
+          searchResults.innerHTML = matches.map(m => `
+            <div class="search-item" onclick="jumpToNode('${m.id}'); document.getElementById('searchResults').style.display='none';">
+              <div>
+                <strong style="color: #fff;">${m.name_mr}</strong>
+                <span style="color: var(--accent); font-size: 0.8rem; margin-left: 6px;">(${m.name_en})</span>
+              </div>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">P${m.generation}</span>
+            </div>
+          `).join('');
+        }
+        searchResults.style.display = 'block';
+      });
+
+      document.addEventListener('click', (e) => {
+        if (!e.target.closest('.search-box')) {
+          searchResults.style.display = 'none';
+        }
+      });
+    }
+
+    // Auto start on DOM load or immediately
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initApp);
+    } else {
+      initApp();
+    }
+  </script>
+</body>
+</html>
