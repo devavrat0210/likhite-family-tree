@@ -914,6 +914,241 @@
       opacity: 1;
     }
 
+  
+    /* =========================================================================
+       MOBILE RESPONSIVE ENHANCEMENTS
+       ========================================================================= */
+    #tree-canvas {
+      touch-action: none;
+    }
+
+    @media (max-width: 768px) {
+      body {
+        font-size: 14px;
+      }
+
+      header {
+        padding: 8px 12px;
+        gap: 8px;
+        flex-wrap: nowrap;
+      }
+
+      .brand-area {
+        gap: 8px;
+        flex-shrink: 0;
+      }
+
+      .crest {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        border-radius: 9px;
+      }
+
+      .brand-text h1 {
+        font-size: 0.92rem;
+        white-space: nowrap;
+      }
+
+      .brand-text p {
+        display: none;
+      }
+
+      .header-pills {
+        display: none;
+      }
+
+      .toolbar {
+        gap: 6px;
+        margin-left: auto;
+      }
+
+      .search-box {
+        width: 105px;
+      }
+
+      .search-box input {
+        padding: 6px 8px 6px 26px;
+        font-size: 0.78rem;
+      }
+
+      .search-icon {
+        left: 8px;
+        font-size: 11px;
+      }
+
+      /* On mobile, tuck secondary buttons into the Menu sheet */
+      #btnExportJSON, #importFileInputWrapper, #btnOpenWhatsApp, #btnOpenScans, #btnLockPortal, #btnOpenCloudModal {
+        display: none !important;
+      }
+
+      .btn-menu-mobile {
+        display: inline-flex !important;
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        background: #1e293b;
+        border: 1px solid var(--accent);
+        color: var(--accent);
+        font-weight: 600;
+      }
+
+      .filter-bar {
+        padding: 6px 10px;
+        gap: 6px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .filter-bar::-webkit-scrollbar {
+        display: none;
+      }
+
+      .view-mode-switch, .branch-tabs {
+        flex-shrink: 0;
+      }
+
+      .view-mode-btn, .branch-tab, .filter-bar .btn {
+        padding: 4px 10px;
+        font-size: 0.75rem;
+      }
+
+      /* Mobile Drawer as Bottom Sheet */
+      .detail-drawer {
+        position: fixed;
+        top: auto;
+        bottom: -100%;
+        left: 0;
+        right: 0;
+        width: 100%;
+        max-width: 100%;
+        height: 72vh;
+        border-radius: 22px 22px 0 0;
+        border-left: none;
+        border-top: 2px solid var(--accent);
+        box-shadow: 0 -12px 35px rgba(0,0,0,0.8);
+        transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        z-index: 1000;
+      }
+
+      .detail-drawer.open {
+        bottom: 0;
+        right: 0;
+      }
+
+      /* Mobile Modals */
+      .modal-content {
+        width: 94vw !important;
+        max-width: 440px !important;
+        max-height: 85vh !important;
+        padding: 16px !important;
+        border-radius: 16px !important;
+      }
+
+      /* Prevent iOS auto-zoom on inputs */
+      input[type="text"], input[type="password"], textarea, select {
+        font-size: 16px !important;
+      }
+
+      .floating-stats {
+        bottom: 12px;
+        left: 12px;
+        padding: 6px 12px;
+        font-size: 0.72rem;
+      }
+
+      .zoom-controls {
+        bottom: 12px;
+        right: 12px;
+      }
+
+      .zoom-btn {
+        width: 38px;
+        height: 38px;
+        font-size: 16px;
+      }
+
+      .password-card {
+        padding: 28px 18px !important;
+        border-radius: 16px !important;
+      }
+
+      .password-crest {
+        font-size: 2.5rem !important;
+      }
+
+      .password-heading {
+        font-size: 1.4rem !important;
+      }
+    }
+
+    @media (min-width: 769px) {
+      .btn-menu-mobile {
+        display: none !important;
+      }
+    }
+
+    /* Menu Action Sheet Styles */
+    .mobile-menu-card {
+      max-width: 460px;
+      border-radius: 20px;
+      background: #111827;
+      border: 1px solid var(--border-color);
+    }
+    .mobile-menu-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .menu-action-btn {
+      background: #1e293b;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 12px 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #f8fafc;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .menu-action-btn:hover {
+      background: #27354f;
+      border-color: var(--accent);
+    }
+    .m-icon {
+      font-size: 1.4rem;
+    }
+    .m-text strong {
+      display: block;
+      font-size: 0.82rem;
+      color: #fff;
+    }
+    .m-text small {
+      display: block;
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .mobile-heritage-info {
+      margin-top: 16px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, 0.07);
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .mobile-heritage-info strong {
+      color: var(--accent);
+    }
+
   </style>
   <!-- Google Firebase SDKs (Cloud Live Sync) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -971,6 +1206,8 @@
     </div>
 
     <div class="toolbar">
+      <!-- Mobile Menu Button -->
+      <button class="btn btn-menu-mobile" id="btnMobileMenu" title="Menu & Actions"><span>☰</span> Menu</button>
       <!-- Search Box -->
       <div class="search-box">
         <span class="search-icon">🔍</span>
@@ -989,7 +1226,7 @@
       </button>
 
       <!-- Import JSON Button -->
-      <label class="btn" title="Import previously saved JSON file" style="cursor: pointer;">
+      <label class="btn" id="importFileInputWrapper" title="Import previously saved JSON file" style="cursor: pointer;">
         <span>📂</span> Import JSON
         <input type="file" id="importFileInput" accept=".json" style="display: none;">
       </label>
@@ -2244,6 +2481,130 @@
         updateViewportTransform();
       });
 
+
+      // =======================================================================
+      // Touch Drag & Multi-Touch Pinch-to-Zoom for Mobile Phones
+      // =======================================================================
+      let initialPinchDistance = null;
+      let initialScale = 1;
+      let isTouchDragging = false;
+      let touchStartX = 0;
+      let touchStartY = 0;
+
+      function getTouchDistance(t1, t2) {
+        const dx = t1.clientX - t2.clientX;
+        const dy = t1.clientY - t2.clientY;
+        return Math.sqrt(dx * dx + dy * dy);
+      }
+
+      ws.addEventListener('touchstart', (e) => {
+        if (e.target.closest('.node-group') || e.target.closest('.floating-stats') || e.target.closest('.zoom-controls') || e.target.closest('#poster-container')) return;
+        
+        if (e.touches.length === 1) {
+          isTouchDragging = true;
+          touchStartX = e.touches[0].clientX - state.translateX;
+          touchStartY = e.touches[0].clientY - state.translateY;
+        } else if (e.touches.length === 2) {
+          isTouchDragging = false;
+          initialPinchDistance = getTouchDistance(e.touches[0], e.touches[1]);
+          initialScale = state.scale;
+        }
+      }, { passive: false });
+
+      ws.addEventListener('touchmove', (e) => {
+        if (e.target.closest('#poster-container')) return;
+        if (isTouchDragging && e.touches.length === 1) {
+          e.preventDefault();
+          state.translateX = e.touches[0].clientX - touchStartX;
+          state.translateY = e.touches[0].clientY - touchStartY;
+          updateViewportTransform();
+        } else if (e.touches.length === 2 && initialPinchDistance) {
+          e.preventDefault();
+          const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
+          const pinchFactor = currentDistance / initialPinchDistance;
+          const newScale = Math.min(Math.max(initialScale * pinchFactor, 0.15), 3.0);
+          
+          const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+          const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+          
+          state.translateX = midX - (midX - state.translateX) * (newScale / state.scale);
+          state.translateY = midY - (midY - state.translateY) * (newScale / state.scale);
+          state.scale = newScale;
+          
+          updateViewportTransform();
+        }
+      }, { passive: false });
+
+      ws.addEventListener('touchend', (e) => {
+        if (e.touches.length === 0) {
+          isTouchDragging = false;
+          initialPinchDistance = null;
+        } else if (e.touches.length === 1) {
+          isTouchDragging = true;
+          touchStartX = e.touches[0].clientX - state.translateX;
+          touchStartY = e.touches[0].clientY - state.translateY;
+          initialPinchDistance = null;
+        }
+      });
+
+      // Mobile Menu Sheet Listeners
+      const mobileMenuModal = document.getElementById('mobileMenuModal');
+      const btnMobileMenu = document.getElementById('btnMobileMenu');
+      const mobileMenuClose = document.getElementById('mobileMenuClose');
+
+      if (btnMobileMenu) btnMobileMenu.addEventListener('click', () => mobileMenuModal.classList.add('open'));
+      if (mobileMenuClose) mobileMenuClose.addEventListener('click', () => mobileMenuModal.classList.remove('open'));
+
+      const mBtnWhatsApp = document.getElementById('mBtnWhatsApp');
+      if (mBtnWhatsApp) {
+        mBtnWhatsApp.addEventListener('click', () => {
+          mobileMenuModal.classList.remove('open');
+          document.getElementById('whatsappModal').classList.add('open');
+        });
+      }
+
+      const mBtnScans = document.getElementById('mBtnScans');
+      if (mBtnScans) {
+        mBtnScans.addEventListener('click', () => {
+          mobileMenuModal.classList.remove('open');
+          document.getElementById('scansModal').classList.add('open');
+        });
+      }
+
+      const mBtnCloud = document.getElementById('mBtnCloud');
+      if (mBtnCloud) {
+        mBtnCloud.addEventListener('click', () => {
+          mobileMenuModal.classList.remove('open');
+          document.getElementById('cloudModal').classList.add('open');
+        });
+      }
+
+      const mBtnExport = document.getElementById('mBtnExport');
+      if (mBtnExport) {
+        mBtnExport.addEventListener('click', () => {
+          mobileMenuModal.classList.remove('open');
+          exportJSON();
+        });
+      }
+
+      const mImportInput = document.getElementById('mImportFileInput');
+      if (mImportInput) {
+        mImportInput.addEventListener('change', (e) => {
+          if (e.target.files && e.target.files[0]) {
+            mobileMenuModal.classList.remove('open');
+            importJSON(e.target.files[0]);
+          }
+        });
+      }
+
+      const mBtnLock = document.getElementById('mBtnLock');
+      if (mBtnLock) {
+        mBtnLock.addEventListener('click', () => {
+          mobileMenuModal.classList.remove('open');
+          lockPortal();
+        });
+      }
+
       window.addEventListener('mouseup', () => {
         state.isDragging = false;
         ws.classList.remove('grabbing');
@@ -2494,6 +2855,75 @@
   <div id="toastNotification" class="toast-notification">
     <span id="toastIcon">🟢</span>
     <span id="toastMessage">Family tree synced with cloud!</span>
+  </div>
+
+
+  <!-- Mobile Actions Menu Sheet -->
+  <div class="modal-overlay" id="mobileMenuModal">
+    <div class="modal-content mobile-menu-card">
+      <div class="modal-header">
+        <div style="font-weight: 700; font-size: 1.05rem; display:flex; align-items:center; gap:8px;">
+          <span>🌳</span> Family Tools & Options
+        </div>
+        <button class="drawer-close" id="mobileMenuClose">&times;</button>
+      </div>
+      <div class="mobile-menu-grid">
+        <button class="menu-action-btn" id="mBtnWhatsApp">
+          <span class="m-icon">📲</span>
+          <div class="m-text">
+            <strong>WhatsApp Images</strong>
+            <small>Ultra-HD & Mobile cards</small>
+          </div>
+        </button>
+
+        <button class="menu-action-btn" id="mBtnScans">
+          <span class="m-icon">📜</span>
+          <div class="m-text">
+            <strong>Original 1992 Scans</strong>
+            <small>8 handwritten archive sheets</small>
+          </div>
+        </button>
+
+        <button class="menu-action-btn" id="mBtnCloud">
+          <span class="m-icon">☁️</span>
+          <div class="m-text">
+            <strong>Cloud Sync</strong>
+            <small>Live Firebase multi-user status</small>
+          </div>
+        </button>
+
+        <button class="menu-action-btn" id="mBtnExport">
+          <span class="m-icon">💾</span>
+          <div class="m-text">
+            <strong>Export JSON</strong>
+            <small>Download database backup</small>
+          </div>
+        </button>
+
+        <label class="menu-action-btn" style="cursor: pointer;">
+          <span class="m-icon">📂</span>
+          <div class="m-text">
+            <strong>Import JSON</strong>
+            <small>Restore from backup</small>
+          </div>
+          <input type="file" id="mImportFileInput" accept=".json" style="display: none;">
+        </label>
+
+        <button class="menu-action-btn" id="mBtnLock" style="border-color: rgba(239, 68, 68, 0.4);">
+          <span class="m-icon">🔒</span>
+          <div class="m-text">
+            <strong style="color: #f87171;">Lock Portal</strong>
+            <small>Log out & protect tree</small>
+          </div>
+        </button>
+      </div>
+
+      <div class="mobile-heritage-info">
+        <div>Deity: <strong>Vyaghrambari, Munjawati</strong></div>
+        <div>Gotra: <strong>Gandhamadan</strong></div>
+        <div>Original Compilation: <strong>Nov 28, 1992</strong></div>
+      </div>
+    </div>
   </div>
 
 </body>
