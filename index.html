@@ -1538,6 +1538,20 @@
       }
     }
 
+
+    /* Log Off Button Styles */
+    .btn-logoff {
+      background: rgba(239, 68, 68, 0.15) !important;
+      border: 1px solid rgba(239, 68, 68, 0.4) !important;
+      color: #f87171 !important;
+      font-weight: 600 !important;
+    }
+    .btn-logoff:hover {
+      background: rgba(239, 68, 68, 0.28) !important;
+      border-color: #ef4444 !important;
+      color: #fff !important;
+    }
+
   </style>
   <!-- Google Firebase SDKs (Cloud Live Sync) -->
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
@@ -1563,7 +1577,7 @@
           <label for="loginRole" style="font-size: 0.78rem; color: #94a3b8; display: block; margin-bottom: 5px; font-weight: 600;">Access Mode:</label>
           <select id="loginRole" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 11px 14px; color: #fff; font-size: 0.95rem; outline: none; cursor: pointer;">
             <option value="guest" selected>👤 Guest (Family Member)</option>
-            <option value="admin">🛡️ Admin (Devavrat / Full Control)</option>
+            <option value="admin">🛡️ Admin (Full Control)</option>
           </select>
         </div>
 
@@ -1580,7 +1594,7 @@
       </form>
       
       <div class="password-hint">
-        Family members: Contact Devavrat Likhite if you need the access password.
+        Family members: Contact Ajay Likhite if you need the access password.
       </div>
     </div>
   </div>
@@ -1596,6 +1610,7 @@
     </div>
 
     <div class="header-pills">
+      <div class="pill">Contact: <strong>Ajay Likhite</strong></div>
       <div class="pill">Deity: <strong>Vyaghrambari, Munjawati</strong></div>
       <div class="pill">Gotra: <strong>Gandhamadan</strong></div>
       <div class="pill">Original Date: <strong>Nov 28, 1992</strong></div>
@@ -1614,10 +1629,6 @@
 
       <!-- User Role Badge (Admin / Guest) -->
       <div id="userRoleBadge" class="pill" style="display: none; padding: 4px 8px; font-size: 0.74rem; font-weight: 600; cursor: default;"></div>
-      <!-- Quick Locate User Button -->
-      <button class="btn btn-user" id="btnLocateUser" title="Find Devavrat branch">
-        <span>★</span> <span class="btn-text-full">Devavrat</span>
-      </button>
 
       <!-- Save & Export JSON Button -->
       <button class="btn btn-save" id="btnExportJSON" title="Export updated JSON database">
@@ -1643,9 +1654,9 @@
       <button class="btn btn-cloud" id="btnOpenCloudModal" title="Live multi-user Cloud Sync">
         <span>☁️</span> Cloud Sync
       </button>
-      <!-- Lock Portal Button -->
-      <button class="btn btn-lock" id="btnLockPortal" title="Lock portal / Log out">
-        <span>🔒</span> Lock
+      <!-- Log Off Button -->
+      <button class="btn btn-logoff" id="btnLockPortal" title="Log off / Exit session">
+        <span>🚪</span> Log Off
       </button>
     </div>
   </header>
@@ -2067,6 +2078,7 @@
       }
       const err = document.getElementById('passwordError');
       if (err) err.classList.remove('show');
+      showToast('Logged off successfully', '🚪');
     }
 
     function setupAuthGate() {
@@ -3302,13 +3314,14 @@
       });
       document.getElementById('btnResetZoom').addEventListener('click', locateUser);
 
-      // User locate button
-      document.getElementById('btnLocateUser').addEventListener('click', () => {
-        {
+      // User locate button (if present)
+      const btnLocate = document.getElementById('btnLocateUser');
+      if (btnLocate) {
+        btnLocate.addEventListener('click', () => {
           switchToTreeMode();
           locateUser();
-        }
-      });
+        });
+      }
 
       // Export / Import / Reset buttons
       document.getElementById('btnExportJSON').addEventListener('click', exportJSON);
@@ -3551,15 +3564,16 @@
         </label>
 
         <button class="menu-action-btn" id="mBtnLock" style="border-color: rgba(239, 68, 68, 0.4);">
-          <span class="m-icon">🔒</span>
+          <span class="m-icon">🚪</span>
           <div class="m-text">
-            <strong style="color: #f87171;">Lock Portal</strong>
-            <small>Log out & protect tree</small>
+            <strong style="color: #f87171;">Log Off</strong>
+            <small>Exit session & lock portal</small>
           </div>
         </button>
       </div>
 
       <div class="mobile-heritage-info">
+        <div>Contact: <strong>Ajay Likhite</strong></div>
         <div>Deity: <strong>Vyaghrambari, Munjawati</strong></div>
         <div>Gotra: <strong>Gandhamadan</strong></div>
         <div>Original Compilation: <strong>Nov 28, 1992</strong></div>
