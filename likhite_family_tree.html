@@ -982,7 +982,7 @@
       }
 
       /* On mobile, tuck secondary buttons into the Menu sheet */
-      #btnExportJSON, #importFileInputWrapper, #btnOpenWhatsApp, #btnOpenScans, #btnLockPortal, #btnOpenCloudModal {
+      #btnExportJSON, #importFileInputWrapper, #btnOpenWhatsApp, #btnOpenScans, #btnOpenCloudModal {
         display: none !important;
       }
 
@@ -1090,6 +1090,27 @@
     @media (min-width: 769px) {
       .btn-menu-mobile {
         display: none !important;
+      }
+    }
+
+    /* Prevent header overflow on laptops & medium screens */
+    @media (max-width: 1400px) {
+      .header-pills {
+        display: none !important;
+      }
+    }
+    @media (max-width: 1100px) {
+      #btnOpenScans, #btnOpenWhatsApp {
+        display: none !important;
+      }
+      .btn-menu-mobile {
+        display: inline-flex !important;
+      }
+    }
+    @media (max-width: 768px) {
+      .btn-logoff {
+        padding: 5px 9px !important;
+        font-size: 0.76rem !important;
       }
     }
 
@@ -1541,15 +1562,24 @@
 
     /* Log Off Button Styles */
     .btn-logoff {
-      background: rgba(239, 68, 68, 0.15) !important;
-      border: 1px solid rgba(239, 68, 68, 0.4) !important;
-      color: #f87171 !important;
-      font-weight: 600 !important;
+      background: rgba(239, 68, 68, 0.22) !important;
+      border: 1.5px solid rgba(239, 68, 68, 0.6) !important;
+      color: #fca5a5 !important;
+      font-weight: 700 !important;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      display: inline-flex !important;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0 !important;
+      transition: all 0.2s ease;
+      white-space: nowrap;
     }
     .btn-logoff:hover {
-      background: rgba(239, 68, 68, 0.28) !important;
+      background: rgba(239, 68, 68, 0.4) !important;
       border-color: #ef4444 !important;
-      color: #fff !important;
+      color: #ffffff !important;
+      box-shadow: 0 0 12px rgba(239, 68, 68, 0.45);
     }
 
   </style>
@@ -1630,6 +1660,11 @@
       <!-- User Role Badge (Admin / Guest) -->
       <div id="userRoleBadge" class="pill" style="display: none; padding: 4px 8px; font-size: 0.74rem; font-weight: 600; cursor: default;"></div>
 
+      <!-- Log Off Button (Prominent & Always Visible) -->
+      <button class="btn btn-logoff" id="btnLockPortal" title="Log off / Exit session">
+        <span>🚪</span> <span class="btn-text-full">Log Off</span>
+      </button>
+
       <!-- Save & Export JSON Button -->
       <button class="btn btn-save" id="btnExportJSON" title="Export updated JSON database">
         <span>💾</span> Export JSON
@@ -1653,10 +1688,6 @@
       <!-- Cloud Sync Button -->
       <button class="btn btn-cloud" id="btnOpenCloudModal" title="Live multi-user Cloud Sync">
         <span>☁️</span> Cloud Sync
-      </button>
-      <!-- Log Off Button -->
-      <button class="btn btn-logoff" id="btnLockPortal" title="Log off / Exit session">
-        <span>🚪</span> Log Off
       </button>
     </div>
   </header>
@@ -2096,6 +2127,14 @@
 
       if (lockBtn) {
         lockBtn.addEventListener('click', lockPortal);
+      }
+      const mLockBtn = document.getElementById('mBtnLock');
+      if (mLockBtn) {
+        mLockBtn.addEventListener('click', () => {
+          const mobileMenuModal = document.getElementById('mobileMenuModal');
+          if (mobileMenuModal) mobileMenuModal.classList.remove('open');
+          lockPortal();
+        });
       }
 
       if (isAuth) {
