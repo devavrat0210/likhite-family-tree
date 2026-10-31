@@ -736,11 +736,172 @@
       font-size: 0.85rem;
       font-weight: 600;
     }
+
+    /* Password Gate Styles */
+    .password-gate-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 999999;
+      background: radial-gradient(circle at center, #172554 0%, #0a0f1d 75%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      backdrop-filter: blur(16px);
+    }
+    .password-card {
+      background: rgba(30, 41, 59, 0.95);
+      border: 1px solid rgba(245, 158, 11, 0.4);
+      border-radius: 20px;
+      padding: 40px 32px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8), 0 0 40px rgba(245, 158, 11, 0.15);
+      text-align: center;
+    }
+    .password-crest {
+      font-size: 3.2rem;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 4px 12px rgba(245, 158, 11, 0.35));
+    }
+    .password-heading {
+      font-family: 'Mukta', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 700;
+      color: #f59e0b;
+      margin-bottom: 4px;
+    }
+    .password-subheading {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #f8fafc;
+      margin-bottom: 14px;
+    }
+    .password-desc {
+      font-size: 0.88rem;
+      color: #94a3b8;
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+    .password-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .password-input-wrap input {
+      width: 100%;
+      padding: 13px 44px 13px 16px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+    .password-input-wrap input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+    }
+    .btn-eye {
+      position: absolute;
+      right: 12px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1.15rem;
+      color: #94a3b8;
+      padding: 4px;
+      user-select: none;
+    }
+    .password-error {
+      display: none;
+      color: #ef4444;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+      font-weight: 600;
+    }
+    .password-error.show {
+      display: block;
+      animation: shake 0.35s ease;
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .btn-unlock {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      border: none;
+      border-radius: 10px;
+      color: #0f172a;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .btn-unlock:hover {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.35);
+    }
+    .password-hint {
+      margin-top: 20px;
+      font-size: 0.78rem;
+      color: #64748b;
+      line-height: 1.4;
+    }
+    .btn-lock {
+      background: #334155 !important;
+      color: #f8fafc !important;
+    }
+    .btn-lock:hover {
+      background: #475569 !important;
+    }
+
   </style>
 </head>
 <body>
 
-  <!-- Top Navigation Header -->
+  
+  <!-- Password Protection Gate -->
+  <div id="passwordGate" class="password-gate-overlay">
+    <div class="password-card">
+      <div class="password-crest">🏛️</div>
+      <div class="password-heading">मुरबाडकर लिखिते कुलवृक्ष</div>
+      <div class="password-subheading">Murbadkar Likhite Family Portal</div>
+      <div class="password-desc">
+        This is a private family archive spanning 12 generations.<br>
+        Please enter the family password to access the portal.
+      </div>
+
+      <form id="passwordForm" onsubmit="handleUnlockSubmit(event);">
+        <div class="password-input-wrap">
+          <input type="password" id="passwordInput" placeholder="Enter family password" autofocus autocomplete="current-password" required>
+          <button type="button" id="togglePasswordVisibility" class="btn-eye" title="Show/Hide Password">👁️</button>
+        </div>
+
+        <div id="passwordError" class="password-error">Incorrect password. Please try again.</div>
+
+        <button type="submit" class="btn-unlock" id="btnUnlock">
+          <span>🔓</span> Unlock Family Tree
+        </button>
+      </form>
+      
+      <div class="password-hint">
+        Family members: Contact Devavrat Likhite if you need the access password.
+      </div>
+    </div>
+  </div>
+
+<!-- Top Navigation Header -->
   <header>
     <div class="brand-area">
       <div class="crest">लि</div>
@@ -789,6 +950,10 @@
       <!-- View Scans Modal Trigger -->
       <button class="btn" id="btnOpenScans" title="View 1992 handwritten sheets">
         <span>📜</span> Original Scans
+      </button>
+      <!-- Lock Portal Button -->
+      <button class="btn btn-lock" id="btnLockPortal" title="Lock portal / Log out">
+        <span>🔒</span> Lock
       </button>
     </div>
   </header>
@@ -1052,7 +1217,98 @@
   </div>
 
   <script>
-    // Embedded Family Tree Data
+    
+
+    // =========================================================================
+    // ACCESS CONTROL (SHA-256 PASSWORD PROTECTION)
+    // Default Password: "likhitefamily"
+    // To change password: hash your new password with SHA-256 and update below.
+    // =========================================================================
+    const PASSWORD_HASH = "c7d4d474041934d45ddd358d5a64d9a68866279b11db55f5b953bb20040c9cdf"; // sha256 of "likhitefamily"
+    let isAppInitialized = false;
+
+    async function sha256(message) {
+      const msgBuffer = new TextEncoder().encode(message);
+      const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+      const hashArray = Array.from(new Uint8Array(hashBuffer));
+      return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    async function handleUnlockSubmit(e) {
+      if (e) e.preventDefault();
+      const input = document.getElementById('passwordInput');
+      const errorDiv = document.getElementById('passwordError');
+      const val = input.value.trim();
+      
+      if (!val) return;
+
+      try {
+        const hashed = await sha256(val);
+        if (hashed === PASSWORD_HASH) {
+          sessionStorage.setItem('likhite_family_auth', 'authenticated');
+          document.getElementById('passwordGate').style.display = 'none';
+          errorDiv.classList.remove('show');
+          if (!isAppInitialized) {
+            initApp();
+            isAppInitialized = true;
+          }
+        } else {
+          errorDiv.classList.add('show');
+          input.select();
+        }
+      } catch (err) {
+        console.error("Crypto error:", err);
+        // Fallback check if crypto subtle is unavailable
+        if (val === 'likhitefamily') {
+          sessionStorage.setItem('likhite_family_auth', 'authenticated');
+          document.getElementById('passwordGate').style.display = 'none';
+          if (!isAppInitialized) {
+            initApp();
+            isAppInitialized = true;
+          }
+        } else {
+          errorDiv.classList.add('show');
+        }
+      }
+    }
+
+    function lockPortal() {
+      sessionStorage.removeItem('likhite_family_auth');
+      document.getElementById('passwordGate').style.display = 'flex';
+      const input = document.getElementById('passwordInput');
+      input.value = '';
+      document.getElementById('passwordError').classList.remove('show');
+      input.focus();
+    }
+
+    function setupAuthGate() {
+      const isAuth = sessionStorage.getItem('likhite_family_auth') === 'authenticated';
+      const gate = document.getElementById('passwordGate');
+      const eyeBtn = document.getElementById('togglePasswordVisibility');
+      const passInput = document.getElementById('passwordInput');
+      const lockBtn = document.getElementById('btnLockPortal');
+
+      if (eyeBtn && passInput) {
+        eyeBtn.addEventListener('click', () => {
+          passInput.type = passInput.type === 'password' ? 'text' : 'password';
+        });
+      }
+
+      if (lockBtn) {
+        lockBtn.addEventListener('click', lockPortal);
+      }
+
+      if (isAuth) {
+        gate.style.display = 'none';
+        initApp();
+        isAppInitialized = true;
+      } else {
+        gate.style.display = 'flex';
+        passInput.focus();
+      }
+    }
+
+// Embedded Family Tree Data
     const DEFAULT_DATA = {"metadata": {"title_mr": "मुरबाडकर लिखिते वंशावळ", "title_en": "Murbadkar Likhite Family Tree", "kuladaivat": "व्याघ्रांबरी, मुंजावती (Vyaghrambari, Munjawati)", "gotra": "गंधमादन (Gandhamadan)", "symbol_x": "वंशखंडित (Lineage ended / no male descendants)", "compilers": ["श्री. भालचंद्र मोरेश्वर लिखिते (Shri Bhalchandra Moreshwar Likhite)", "श्री. अरविंद भास्कर लिखिते (Shri Arvind Bhaskar Likhite)"], "assistance": ["श्री. विनायक शंकर लिखिते (Shri Vinayak Shankar Likhite)", "श्री. रमाकांत बाळकृष्ण लिखिते (Shri Ramakant Balkrishna Likhite)"], "date": "२८ नोव्हेंबर १९९२ (28 November 1992)", "source_scans": "Page 1.jpg to Page 8.jpg (LikhiteFamilyTree.pptx / LikhiteFamilyTree.pdf)"}, "tree": {"id": "tukaji_1", "name_mr": "तुकाजी", "name_en": "Tukaji", "generation": 1, "children": [{"id": "abaji_2", "name_mr": "आबाजी", "name_en": "Abaji", "generation": 2, "children": [{"id": "raghunath_3", "name_mr": "रघुनाथ", "name_en": "Raghunath", "generation": 3, "children": [{"id": "appaji_4", "name_mr": "आप्पाजी", "name_en": "Appaji", "generation": 4, "branch_name": "आप्पाजी शाखा (Appaji Branch)", "children": [{"id": "balkrishna_5", "name_mr": "बाळकृष्ण", "name_en": "Balkrishna", "generation": 5, "children": [{"id": "bhaurao_6", "name_mr": "भाऊराव", "name_en": "Bhaurao", "generation": 6, "children": [{"id": "gajanan_7", "name_mr": "गजानन", "name_en": "Gajanan", "generation": 7, "children": [{"id": "ramchandra_8_g", "name_mr": "रामचंद्र", "name_en": "Ramchandra", "generation": 8, "children": [{"id": "ulhas_9_r", "name_mr": "उल्हास", "name_en": "Ulhas", "generation": 9, "lineage_ended": true}, {"id": "anand_9", "name_mr": "आनंद", "name_en": "Anand", "generation": 9, "children": [{"id": "ajay_10", "name_mr": "अजय", "name_en": "Ajay", "generation": 10, "children": [{"id": "devavrat_11", "name_mr": "देवव्रत", "name_en": "Devavrat", "generation": 11, "is_user": true, "children": [{"id": "viaan_12", "name_mr": "विआन", "name_en": "Viaan", "generation": 12}, {"id": "viraj_12", "name_mr": "विराज", "name_en": "Viraj", "generation": 12}]}, {"id": "rigved_11", "name_mr": "ऋग्वेद", "name_en": "Rigved", "generation": 11}]}]}, {"id": "milind_9_r", "name_mr": "मिलिंद", "name_en": "Milind", "generation": 9}, {"id": "shashikant_9", "name_mr": "शशीकांत", "name_en": "Shashikant", "generation": 9, "children": [{"id": "akshay_10_s", "name_mr": "अक्षय", "name_en": "Akshay", "generation": 10}]}]}, {"id": "laxman_8_g", "name_mr": "लक्ष्मण", "name_en": "Laxman", "generation": 8, "children": [{"id": "shirish_9", "name_mr": "शिरीष", "name_en": "Shirish", "generation": 9}, {"id": "surendra_9", "name_mr": "सुरेंद्र", "name_en": "Surendra", "generation": 9}]}, {"id": "rajaram_8_g", "name_mr": "राजाराम", "name_en": "Rajaram", "generation": 8, "lineage_ended": true}, {"id": "mukund_8", "name_mr": "मुकुन्द", "name_en": "Mukund", "generation": 8, "children": [{"id": "ashutosh_9", "name_mr": "आशुतोष", "name_en": "Ashutosh", "generation": 9}, {"id": "sagar_9", "name_mr": "सागर", "name_en": "Sagar", "generation": 9, "children": [{"id": "madhuresh_10", "name_mr": "मधुरेश", "name_en": "Madhuresh", "generation": 10}]}]}]}, {"id": "moreshwar_7", "name_mr": "मोरेश्वर", "name_en": "Moreshwar", "generation": 7, "children": [{"id": "chintaman_8", "name_mr": "चिंतामण", "name_en": "Chintaman", "generation": 8, "children": [{"id": "sanjay_9_c", "name_mr": "संजय", "name_en": "Sanjay", "generation": 9, "children": [{"id": "saurabh_10", "name_mr": "सौरभ", "name_en": "Saurabh", "generation": 10}]}]}, {"id": "bhalchandra_8", "name_mr": "भालचंद्र", "name_en": "Bhalchandra", "generation": 8, "note": "सह-संकलक (Co-compiler 1992)", "children": [{"id": "ajay_9_b", "name_mr": "अजय", "name_en": "Ajay", "generation": 9}]}, {"id": "kamalakar_8", "name_mr": "कमलाकर", "name_en": "Kamalakar", "generation": 8, "children": [{"id": "sandeep_9_k", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 9}]}, {"id": "purushottam_8_m", "name_mr": "पुरुषोत्तम", "name_en": "Purushottam", "generation": 8, "children": [{"id": "jitendra_9", "name_mr": "जितेन्द्र", "name_en": "Jitendra", "generation": 9}, {"id": "ashish_9", "name_mr": "आशिष", "name_en": "Ashish", "generation": 9}, {"id": "abhijit_9", "name_mr": "अभिजीत", "name_en": "Abhijit", "generation": 9}]}, {"id": "madhav_8_m", "name_mr": "माधव", "name_en": "Madhav", "generation": 8, "children": [{"id": "prasad_9", "name_mr": "प्रसाद", "name_en": "Prasad", "generation": 9}]}]}, {"id": "vinayak_7", "name_mr": "विनायक", "name_en": "Vinayak", "generation": 7, "children": [{"id": "chandrakant_8", "name_mr": "चंद्रकांत", "name_en": "Chandrakant", "generation": 8, "lineage_ended": true}, {"id": "anil_8_v", "name_mr": "अनिल", "name_en": "Anil", "generation": 8, "children": [{"id": "santosh_9_a", "name_mr": "संतोष", "name_en": "Santosh", "generation": 9}]}, {"id": "ashok_8_v", "name_mr": "अशोक", "name_en": "Ashok", "generation": 8}]}]}, {"id": "damodar_6", "name_mr": "दामोदर", "name_en": "Damodar", "generation": 6, "lineage_ended": true, "children": [{"id": "vinayak_7_d", "name_mr": "विनायक", "name_en": "Vinayak", "generation": 7, "children": [{"id": "pradeep_8", "name_mr": "प्रदीप", "name_en": "Pradeep", "generation": 8}, {"id": "praveen_8", "name_mr": "प्रवीण", "name_en": "Praveen", "generation": 8, "children": [{"id": "gaurav_9", "name_mr": "गौरव", "name_en": "Gaurav", "generation": 9}]}, {"id": "prafulla_8", "name_mr": "प्रफुल्ल", "name_en": "Prafulla", "generation": 8, "children": [{"id": "praneet_9", "name_mr": "प्रणीत", "name_en": "Praneet", "generation": 9}]}]}]}, {"id": "shankar_6", "name_mr": "शंकर", "name_en": "Shankar", "generation": 6, "children": [{"id": "balkrishna_7_s", "name_mr": "बाळकृष्ण", "name_en": "Balkrishna", "generation": 7, "children": [{"id": "sham_8_b", "name_mr": "शाम", "name_en": "Sham", "generation": 8, "lineage_ended": true}, {"id": "rajendra_8", "name_mr": "राजेंद्र", "name_en": "Rajendra", "generation": 8, "children": [{"id": "paritosh_9", "name_mr": "परितोष", "name_en": "Paritosh", "generation": 9}]}]}, {"id": "ramakant_7_s", "name_mr": "रमाकांत", "name_en": "Ramakant", "generation": 7, "note": "साहाय्यक (Contributor 1992)", "children": [{"id": "mahendra_8", "name_mr": "महेंद्र", "name_en": "Mahendra", "generation": 8, "children": [{"id": "akshay_9_m", "name_mr": "अक्षय", "name_en": "Akshay", "generation": 9}]}]}]}, {"id": "sakharam_6_b", "name_mr": "सखाराम", "name_en": "Sakharam", "generation": 6, "children": [{"id": "prabhakar_7", "name_mr": "प्रभाकर", "name_en": "Prabhakar", "generation": 7, "children": [{"id": "dattatraya_8_p", "name_mr": "दत्तात्रेय", "name_en": "Dattatraya", "generation": 8, "children": [{"id": "pramod_9", "name_mr": "प्रमोद", "name_en": "Pramod", "generation": 9, "lineage_ended": true}, {"id": "niwas_9", "name_mr": "निवास", "name_en": "Niwas", "generation": 9, "children": [{"id": "chaitanya_10", "name_mr": "चैतन्य", "name_en": "Chaitanya", "generation": 10}]}]}, {"id": "vasant_8_p", "name_mr": "वसंत", "name_en": "Vasant", "generation": 8, "children": [{"id": "avinash_9", "name_mr": "अविनाश", "name_en": "Avinash", "generation": 9}]}, {"id": "purushottam_8_p", "name_mr": "पुरुषोत्तम", "name_en": "Purushottam", "generation": 8, "children": [{"id": "anil_9_pu", "name_mr": "अनिल", "name_en": "Anil", "generation": 9, "children": [{"id": "sannil_10", "name_mr": "संनिल", "name_en": "Sannil", "generation": 10}]}, {"id": "ajay_9_pu", "name_mr": "अजय", "name_en": "Ajay", "generation": 9, "children": [{"id": "shakun_10", "name_mr": "शकुन", "name_en": "Shakun", "generation": 10}]}]}, {"id": "anant_8_p", "name_mr": "अनंत", "name_en": "Anant", "generation": 8, "children": [{"id": "sunil_9_an", "name_mr": "सुनिल", "name_en": "Sunil", "generation": 9}]}, {"id": "keshav_8", "name_mr": "केशव", "name_en": "Keshav", "generation": 8, "children": [{"id": "shekhar_9_k", "name_mr": "शेखर", "name_en": "Shekhar", "generation": 9, "children": [{"id": "sarvesh_10", "name_mr": "सर्वेश", "name_en": "Sarvesh", "generation": 10}]}, {"id": "nitin_9", "name_mr": "नितीन", "name_en": "Nitin", "generation": 9, "children": [{"id": "manil_10", "name_mr": "मनिल", "name_en": "Manil", "generation": 10}]}, {"id": "kiran_9", "name_mr": "किरण", "name_en": "Kiran", "generation": 9, "children": [{"id": "pratik_10", "name_mr": "प्रतिक", "name_en": "Pratik", "generation": 10}]}]}, {"id": "ratnakar_8", "name_mr": "रत्नाकर", "name_en": "Ratnakar", "generation": 8, "children": [{"id": "vijay_9_r", "name_mr": "विजय", "name_en": "Vijay", "generation": 9, "children": [{"id": "nilesh_10_v", "name_mr": "निलेश", "name_en": "Nilesh", "generation": 10}, {"id": "umesh_10", "name_mr": "उमेश", "name_en": "Umesh", "generation": 10}]}, {"id": "sudhir_9", "name_mr": "सुधीर", "name_en": "Sudhir", "generation": 9, "children": [{"id": "pushkar_10", "name_mr": "पुष्कर", "name_en": "Pushkar", "generation": 10}]}, {"id": "dinkar_9", "name_mr": "दिनकर", "name_en": "Dinkar", "generation": 9, "children": [{"id": "vijay_10_d", "name_mr": "विजय", "name_en": "Vijay", "generation": 10, "children": [{"id": "viraj_11", "name_mr": "विराज", "name_en": "Viraj", "generation": 11}, {"id": "vipul_11", "name_mr": "विपूल", "name_en": "Vipul", "generation": 11}]}, {"id": "sunil_10_d", "name_mr": "सुनिल", "name_en": "Sunil", "generation": 10}, {"id": "sham_10_d", "name_mr": "शाम", "name_en": "Sham", "generation": 10}, {"id": "jayant_10_d", "name_mr": "जयंत", "name_en": "Jayant", "generation": 10}]}]}]}]}]}, {"id": "yashwant_5", "name_mr": "यशवंत", "name_en": "Yashwant", "generation": 5, "children": [{"id": "ramkrishna_6", "name_mr": "रामकृष्ण", "name_en": "Ramkrishna", "generation": 6, "children": [{"id": "bhaskar_7_y", "name_mr": "भास्कर", "name_en": "Bhaskar", "generation": 7, "lineage_ended": true}, {"id": "shantaram_7", "name_mr": "शांताराम", "name_en": "Shantaram", "generation": 7, "children": [{"id": "anil_8_sh", "name_mr": "अनिल", "name_en": "Anil", "generation": 8}]}]}]}]}, {"id": "laxman_4_r", "name_mr": "लक्ष्मण", "name_en": "Laxman", "generation": 4, "lineage_ended": true, "branch_name": "लक्ष्मण शाखा (Laxman Branch)"}, {"id": "jayaram_4", "name_mr": "जयराम", "name_en": "Jayaram", "generation": 4, "branch_name": "जयराम शाखा (Jayaram Branch)", "children": [{"id": "ramchandra_5_j", "name_mr": "रामचंद्र", "name_en": "Ramchandra", "generation": 5, "children": [{"id": "sakharam_6_j", "name_mr": "सखाराम", "name_en": "Sakharam", "generation": 6, "children": [{"id": "laxman_7_s", "name_mr": "लक्ष्मण", "name_en": "Laxman", "generation": 7}]}]}, {"id": "parashuram_5", "name_mr": "परशुराम", "name_en": "Parashuram", "generation": 5, "children": [{"id": "bhau_6_p", "name_mr": "भाऊ", "name_en": "Bhau", "generation": 6, "lineage_ended": true}, {"id": "kaluram_trimbak_6", "name_mr": "काळूराम / त्रिंबक", "name_en": "Kaluram / Trimbak", "generation": 6, "children": [{"id": "dattatraya_bhai_7", "name_mr": "दत्तात्रेय / भाई", "name_en": "Dattatraya / Bhai", "generation": 7, "children": [{"id": "shekhar_8_d", "name_mr": "शेखर", "name_en": "Shekhar", "generation": 8}, {"id": "ajit_8", "name_mr": "अजित", "name_en": "Ajit", "generation": 8, "children": [{"id": "abhishek_9", "name_mr": "अभिषेक", "name_en": "Abhishek", "generation": 9}]}, {"id": "kishor_8", "name_mr": "किशोर", "name_en": "Kishor", "generation": 8}, {"id": "rajan_8", "name_mr": "राजन", "name_en": "Rajan", "generation": 8}, {"id": "sandesh_8", "name_mr": "संदेश", "name_en": "Sandesh", "generation": 8, "children": [{"id": "nikhil_9", "name_mr": "निखिल", "name_en": "Nikhil", "generation": 9}]}]}]}]}]}, {"id": "govind_vasudev_4", "name_mr": "गोविंद / वासुदेव", "name_en": "Govind / Vasudev", "generation": 4, "branch_name": "गोविंद / वासुदेव शाखा (Govind / Vasudev Branch)", "children": [{"id": "vishwanath_bhau_5", "name_mr": "विश्वनाथ / भाऊ", "name_en": "Vishwanath / Bhau", "generation": 5, "children": [{"id": "malhar_6", "name_mr": "मल्हार", "name_en": "Malhar", "generation": 6, "lineage_ended": true}, {"id": "krishnanath_6", "name_mr": "कृष्णनाथ", "name_en": "Krishnanath", "generation": 6, "children": [{"id": "deepak_7", "name_mr": "दिपक", "name_en": "Deepak", "generation": 7}, {"id": "rohan_brijesh_7", "name_mr": "रोहन / ब्रिजेश", "name_en": "Rohan / Brijesh", "generation": 7}]}]}, {"id": "ganesh_5", "name_mr": "गणेश", "name_en": "Ganesh", "generation": 5, "lineage_ended": true}]}, {"id": "mahadev_4", "name_mr": "महादेव", "name_en": "Mahadev", "generation": 4, "branch_name": "महादेव शाखा (Mahadev Branch)", "children": [{"id": "dattatraya_bhai_5_m", "name_mr": "दत्तात्रेय / भाई", "name_en": "Dattatraya / Bhai", "generation": 5, "children": [{"id": "balu_6", "name_mr": "बाळू", "name_en": "Balu", "generation": 6, "lineage_ended": true}]}, {"id": "kashinath_5", "name_mr": "काशिनाथ", "name_en": "Kashinath", "generation": 5, "children": [{"id": "manohar_6", "name_mr": "मनोहर", "name_en": "Manohar", "generation": 6, "children": [{"id": "milind_7_ma", "name_mr": "मिलिंद", "name_en": "Milind", "generation": 7}]}, {"id": "shridhar_6", "name_mr": "श्रीधर", "name_en": "Shridhar", "generation": 6, "children": [{"id": "santosh_7_sh", "name_mr": "संतोष", "name_en": "Santosh", "generation": 7}, {"id": "sandeep_7_sh", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 7}]}]}, {"id": "shivram_5", "name_mr": "शिवराम", "name_en": "Shivram", "generation": 5, "children": [{"id": "ulhas_6_s", "name_mr": "उल्हास", "name_en": "Ulhas", "generation": 6, "children": [{"id": "shrikant_7", "name_mr": "श्रीकांत", "name_en": "Shrikant", "generation": 7}]}, {"id": "arun_6_s", "name_mr": "अरुण", "name_en": "Arun", "generation": 6, "children": [{"id": "niranjan_7", "name_mr": "निरंजन", "name_en": "Niranjan", "generation": 7}]}]}]}, {"id": "vitthal_4", "name_mr": "विठ्ठल", "name_en": "Vitthal", "generation": 4, "branch_name": "विठ्ठल शाखा (Vitthal Branch)", "children": [{"id": "ramchandra_baba_5_v", "name_mr": "रामचंद्र / बाबा", "name_en": "Ramchandra / Baba", "generation": 5, "lineage_ended": true}, {"id": "dwarkanath_5", "name_mr": "द्वारकानाथ", "name_en": "Dwarkanath", "generation": 5, "children": [{"id": "madhav_6_d", "name_mr": "माधव", "name_en": "Madhav", "generation": 6, "children": [{"id": "rohan_7_m", "name_mr": "रोहन", "name_en": "Rohan", "generation": 7}]}, {"id": "pandharinath_baba_6", "name_mr": "पंढरीनाथ / बाबा", "name_en": "Pandharinath / Baba", "generation": 6, "children": [{"id": "jayant_7_p", "name_mr": "जयंत", "name_en": "Jayant", "generation": 7}, {"id": "vinay_7", "name_mr": "विनय", "name_en": "Vinay", "generation": 7}]}]}, {"id": "pandurang_anna_5", "name_mr": "पांडुरंग / आण्णा", "name_en": "Pandurang / Anna", "generation": 5, "children": [{"id": "purushottam_chandu_6", "name_mr": "पुरुषोत्तम / चंदू", "name_en": "Purushottam / Chandu", "generation": 6, "children": [{"id": "amit_7_p", "name_mr": "अमित", "name_en": "Amit", "generation": 7, "children": [{"id": "nachiket_8", "name_mr": "नचिकेत", "name_en": "Nachiket", "generation": 8}]}]}]}, {"id": "ramakant_5_v", "name_mr": "रमाकांत", "name_en": "Ramakant", "generation": 5, "children": [{"id": "prashant_6", "name_mr": "प्रशांत", "name_en": "Prashant", "generation": 6}]}, {"id": "sharad_dattatraya_5", "name_mr": "शरद / दत्तात्रेय", "name_en": "Sharad / Dattatraya", "generation": 5, "children": [{"id": "milind_6_sh", "name_mr": "मिलिंद", "name_en": "Milind", "generation": 6, "children": [{"id": "rohan_7_s", "name_mr": "रोहन", "name_en": "Rohan", "generation": 7}]}]}]}, {"id": "narayan_4", "name_mr": "नारायण", "name_en": "Narayan", "generation": 4, "branch_name": "नारायण शाखा (Narayan Branch)", "children": [{"id": "balkrishna_kushabhau_5", "name_mr": "बाळकृष्ण / कुशाभाऊ", "name_en": "Balkrishna / Kushabhau", "generation": 5, "children": [{"id": "shashi_6", "name_mr": "शशी", "name_en": "Shashi", "generation": 6, "children": [{"id": "ajay_7_sh", "name_mr": "अजय", "name_en": "Ajay", "generation": 7}, {"id": "amit_7_sh", "name_mr": "अमित", "name_en": "Amit", "generation": 7}]}, {"id": "vijay_6_b", "name_mr": "विजय", "name_en": "Vijay", "generation": 6, "children": [{"id": "sandeep_7_v", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 7}, {"id": "nilesh_7_v", "name_mr": "निलेश", "name_en": "Nilesh", "generation": 7}]}]}, {"id": "rajaram_5_n", "name_mr": "राजाराम", "name_en": "Rajaram", "generation": 5, "children": [{"id": "madhukar_6", "name_mr": "मधुकर", "name_en": "Madhukar", "generation": 6, "children": [{"id": "vijay_vivek_7", "name_mr": "विजय / विवेक", "name_en": "Vijay / Vivek", "generation": 7}, {"id": "atul_7", "name_mr": "अतुल", "name_en": "Atul", "generation": 7}]}, {"id": "sudhakar_6", "name_mr": "सुधाकर", "name_en": "Sudhakar", "generation": 6, "children": [{"id": "sandeep_7_su", "name_mr": "संदीप", "name_en": "Sandeep", "generation": 7}]}, {"id": "arun_6_r", "name_mr": "अरुण", "name_en": "Arun", "generation": 6, "lineage_ended": true}]}, {"id": "bhaskar_5", "name_mr": "भास्कर", "name_en": "Bhaskar", "generation": 5, "children": [{"id": "vasant_6_bh", "name_mr": "वसंत", "name_en": "Vasant", "generation": 6, "children": [{"id": "nilesh_7_va", "name_mr": "निलेश", "name_en": "Nilesh", "generation": 7}]}, {"id": "arvind_6", "name_mr": "अरविंद", "name_en": "Arvind", "generation": 6, "note": "नागपूर (Nagpur), सह-संकलक (Co-compiler 1992)", "children": [{"id": "aniket_7", "name_mr": "अनिकेत", "name_en": "Aniket", "generation": 7}, {"id": "amaresh_7", "name_mr": "अमरेश", "name_en": "Amaresh", "generation": 7}]}]}]}]}]}]}};
 
     // Check Local Storage for user modifications
@@ -1882,9 +2138,9 @@
 
     // Auto start on DOM load or immediately
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initApp);
+      document.addEventListener('DOMContentLoaded', setupAuthGate);
     } else {
-      initApp();
+      setupAuthGate();
     }
   </script>
 </body>
