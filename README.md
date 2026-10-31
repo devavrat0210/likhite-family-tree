@@ -1,76 +1,104 @@
 # मुरबाडकर लिखिते वंशावळ (Murbadkar Likhite Family Tree)
 **Interactive Genealogical Archive & Family Tree Visualizer (12 Generations • 175+ Members)**
 
-An interactive, searchable, and editable digital genealogy of the **Murbadkar Likhite (मुरबाडकर लिखिते)** family, tracing 12 generations from founding ancestor **तुकाजी (Tukaji)** to the newest generation.
+An interactive, searchable, and editable digital genealogy of the **Murbadkar Likhite (मुरबाडकर लिखिते)** family, tracing 12 generations from founding ancestor **तुकाजी (Tukaji)** to the newest generation (**Viaan & Viraj**).
 
 ---
 
-## 🌟 वैशिष्ट्ये (Key Features)
+## 🔒 Password Protection (गोपनीयता व पासवर्ड संरक्षण)
 
-* **परस्परसंवादी वंशावळ (Interactive Canvas):** Smooth pan, zoom, click-to-expand, and generational levels (पिढी १ ते १२).
-* **शोध सुविधा (Live Search):** Search any ancestor in Marathi Devanagari or English.
-* **देवव्रत शाखा (Quick Locate):** 1-click button to center on Devavrat and his children Viaan & Viraj.
-* **माहिती संपादन व विस्तार (Full Editor):**
-  * कोणत्याही व्यक्तीची माहिती, स्पेलिंग दुरुस्त करा.
-  * **जन्म तारीख (Birthdate)** जोडा.
-  * नवीन मुले (Add Child) किंवा भावंडे (Add Sibling) जोडून वंशावळ वाढवा.
-  * स्वयंचलित **Local Storage** मध्ये बदल सेव्ह होतात.
-  * **Export / Import JSON:** अद्ययावत वंशावळ फाईलमध्ये सेव्ह करून नंतर लोड करा.
-* **मूळ दस्तऐवज (Original 1992 Scans):** २८ नोव्हेंबर १९९२ ची सर्व ८ मूळ हस्तलिखित पत्रके थेट ब्राऊझरमध्ये पाहण्याची सोय.
-* **WhatsApp साठी चित्रे:** Ultra-HD (29,712 × 5,110 px) आणि मोबाईल-फ्रेंडली (9:16) चित्रे १-क्लिकमध्ये डाउनलोड करा.
+The website is protected with a family access security gate using **SHA-256 cryptographic verification**. Only family members who enter the correct password can view the family tree.
+
+* **Default Family Password:** `likhitefamily`
+* **Session Persistence:** Once unlocked in a browser tab, family members remain logged in for that session.
+* **Lock Button:** A "🔒 Lock" button is located on the top header toolbar to instantly re-lock the screen.
+
+### How to Change the Password:
+1. Choose your desired new password (e.g., `MyFamilyPass2026`).
+2. Generate its SHA-256 hash using terminal or Python:
+   ```bash
+   python3 -c "import hashlib; print(hashlib.sha256('MyFamilyPass2026'.encode()).hexdigest())"
+   ```
+3. Open `index.html` in an editor, find line ~1235:
+   ```javascript
+   const PASSWORD_HASH = "c7d4d474041934d45ddd358d5a64d9a68866279b11db55f5b953bb20040c9cdf";
+   ```
+4. Replace the string with your new SHA-256 hash and save. The plain text password is never stored or visible in the code.
 
 ---
 
-## 🚀 GitHub Pages वर लाईव्ह कसे करावे (How to Host on GitHub Pages)
+## 🌟 Features (वैशिष्ट्ये)
 
-हे फोल्डर थेट GitHub वर अपलोड करून विनामूल्य (Free) वेबसाईट म्हणून होस्ट करण्यासाठी खालील ३ पायऱ्या करा:
+* **Interactive Canvas:** Smooth pan, zoom, click-to-expand, and generational levels (पिढी १ ते १२).
+* **Live Search:** Fast search by ancestor name in Marathi Devanagari or English transliteration.
+* **Locate Devavrat Branch:** 1-click button to center directly on Devavrat and his children **Viaan & Viraj**.
+* **Edit & Extend Tree:**
+  * Edit name spelling in Devanagari & English.
+  * Add **Birthdate** and notes.
+  * Add new children (**Add Child**) or siblings (**Add Sibling**) to extend the lineage.
+  * Changes auto-save to browser **LocalStorage**.
+  * **Export / Import JSON:** Download your updated family database anytime.
+* **Original 1992 Manuscript Scans:** Built-in viewer for all 8 original handwritten sheets from November 28, 1992.
+* **WhatsApp Exports:** 1-click access to download Ultra-HD (29,712 × 5,110 px) and mobile cards.
 
-### पायरी १: GitHub वर नवीन Repository तयार करा
-1. [github.com](https://github.com) वर जाऊन लॉगिन करा.
-2. **New Repository** तयार करा (उदा. `likhite-family-tree`).
-3. Repository **Public** ठेवा.
+---
 
-### पायरी २: या फोल्डरमधील सर्व फाईल्स अपलोड करा
-तुमच्या टर्मिनलमध्ये या फोल्डरमध्ये जाऊन खालील कमांड्स चालवा:
+## 🚀 Step-by-Step GitHub Pages Hosting Instructions
+
+Host this private family archive on **GitHub Pages** for free in 4 simple steps:
+
+### Step 1: Create a GitHub Repository
+1. Log in to [github.com](https://github.com) (sign up if you don't have an account).
+2. Click the **+** (plus icon) in the top right corner and select **New repository**.
+3. Set **Repository name**: e.g., `likhite-family-tree` or `likhitefamily`.
+4. Choose **Public** (GitHub Pages requires Public on free accounts; the password gate secures the webpage).
+5. Leave "Add a README file", ".gitignore", and license **UNCHECKED** (we already have them ready).
+6. Click **Create repository**.
+
+### Step 2: Push this Folder to GitHub
+Open Terminal on your Mac and run:
 ```bash
-git init
-git add .
-git commit -m "Initial commit - Likhite Family Tree"
+cd /Users/devavrat0210/Desktop/Temp/likhitefamilytree/LikhiteFamilyTreeWeb
+git remote add origin https://github.com/<YOUR-GITHUB-USERNAME>/<YOUR-REPO-NAME>.git
 git branch -M main
-git remote add origin https://github.com/<your-username>/likhite-family-tree.git
 git push -u origin main
 ```
-*(किंवा GitHub च्या वेबसाईटवरून **Upload files** पर्यायाने या फोल्डरमधील सर्व फाईल्स थेट ड्रॅग-अँड-ड्रॉप करू शकता.)*
+*(Replace `<YOUR-GITHUB-USERNAME>` and `<YOUR-REPO-NAME>` with your actual GitHub username and repository name).*
 
-### पायरी ३: GitHub Pages चालू करा
-1. तुमच्या GitHub Repository मध्ये **Settings** वर क्लिक करा.
-2. डाव्या बाजूच्या मेनूमधील **Pages** वर जा.
-3. **Build and deployment** अंतर्गत:
-   * **Source:** `Deploy from a branch` निवडा.
-   * **Branch:** `main` आणि `/ (root)` निवडा.
-   * **Save** बटणावर क्लिक करा.
+### Step 3: Enable GitHub Pages
+1. On your GitHub repository page, click **Settings** (tab at the top).
+2. On the left sidebar menu, click **Pages**.
+3. Under **Build and deployment**:
+   * **Source:** Select `Deploy from a branch`.
+   * **Branch:** Select `main` and folder `/ (root)`.
+   * Click **Save**.
 
-🎉 अवघ्या १-२ मिनिटांत तुमची वेबसाईट लाईव्ह होईल:
+### Step 4: Share with Family
+Within 1-2 minutes, GitHub will publish your live site at:
 ```
-https://<your-username>.github.io/likhite-family-tree/
+https://<YOUR-GITHUB-USERNAME>.github.io/<YOUR-REPO-NAME>/
 ```
-ही लिंक तुम्ही जगातील सर्व कुटुंबीयांसोबत थेट शेअर करू शकता!
+Share this link with your family along with the password (`likhitefamily`). When they visit the link:
+1. They will see the royal **मुरबाडकर लिखिते कुलवृक्ष** lock screen.
+2. They enter `likhitefamily` and click **Unlock Family Tree**.
+3. The full tree, search, zoom, WhatsApp images, and handwritten 1992 scans will open seamlessly on mobile phones, tablets, or computers!
 
 ---
 
-## 📁 फाईल रचना (Repository Structure)
+## 📁 Repository Contents
 
-* `index.html` — मुख्य परस्परसंवादी वंशावळ वेब अ‍ॅप (Interactive Web Application)
-* `likhite_family_tree.json` — १७५ कुटुंबीयांचा संपूर्ण डेटाबेस (Structured Data)
-* `likhite_full_family_tree_ultra_hd.jpg` — २९,७१२ × ५,११० px महाकाय पोस्टर (Full Tree Ultra HD)
-* `likhite_direct_lineage_ultra_hd.jpg` — थेट १२ पिढ्यांचे मोबाईल कार्ड (9:16 Mobile HD)
-* `likhite_gajanan_branch_ultra_hd.jpg` — गजानन शाखा कुटुंब चार्ट (Gajanan Branch HD)
-* `Page 1.jpg` ते `Page 8.jpg` — १९९२ ची मूळ हस्तलिखित पत्रके (Original Manuscript Scans)
-* `.nojekyll` — GitHub Pages static serving bypass
+* `index.html` — Password-protected interactive family tree web application.
+* `likhite_family_tree.json` — 175+ members across 12 generations structured database.
+* `likhite_full_family_tree_ultra_hd.jpg` — 29,712 × 5,110 px master poster image.
+* `likhite_direct_lineage_ultra_hd.jpg` — Direct 12-generation lineage mobile card.
+* `likhite_gajanan_branch_ultra_hd.jpg` — Gajanan branch family lineage card.
+* `Page 1.jpg` to `Page 8.jpg` — 1992 handwritten original manuscript scans.
+* `.nojekyll` — Ensures GitHub Pages serves all assets and subfolders correctly.
+* `.gitignore` — Ignores unnecessary temporary operating system files.
 
 ---
 
-## 🏛️ कुल परिचय (Heritage Metadata)
+## 🏛️ Heritage Metadata (कुल परिचय)
 
 * **कुलदैवत:** व्याघ्रांबरी, मुंजावती
 * **गोत्र:** गंधमादन
