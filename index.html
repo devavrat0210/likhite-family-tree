@@ -331,6 +331,9 @@
       overflow: hidden;
       cursor: grab;
       user-select: none;
+      -webkit-user-select: none;
+      touch-action: none !important;
+      overscroll-behavior: none;
       background-image: 
         radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, rgba(10, 15, 29, 0.95) 100%),
         linear-gradient(to right, rgba(255,255,255,0.02) 1px, transparent 1px),
@@ -346,6 +349,7 @@
       width: 100%;
       height: 100%;
       display: block;
+      touch-action: none !important;
     }
 
     /* Poster Container */
@@ -1490,8 +1494,7 @@
   <div class="filter-bar">
     <!-- View Mode Switch -->
     <div class="view-mode-tabs">
-      <button class="view-mode-btn" id="tabModeMobile">📱 Mobile Cards</button>
-      <button class="view-mode-btn active" id="tabModeTree">🖥️ Canvas Tree</button>
+      <button class="view-mode-btn active" id="tabModeTree">🌟 Interactive Tree</button>
       <button class="view-mode-btn" id="tabModePoster">📜 Full Poster View</button>
     </div>
 
@@ -1533,39 +1536,12 @@
       <img src="likhite_full_family_tree_ultra_hd.jpg" id="poster-img" alt="Full Family Tree Poster">
     </div>
 
-    <!-- Mobile Cards View Container (Fast, Touch-friendly Mobile Feed) -->
-    <div id="mobile-tree-container">
-      <div class="mobile-filter-strip">
-        <div class="mobile-search-bar">
-          <input type="text" id="mobileSearchInput" placeholder="🔍 Search ancestor (उदा. देवव्रत, Ajay, Tukaji)...">
-        </div>
-        <div class="mobile-gen-selector" id="mobileGenSelector">
-          <!-- Generation filter pills populated dynamically -->
-        </div>
-      </div>
-      <div id="mobileCardList" class="mobile-card-list">
-        <!-- Rendered dynamically -->
-      </div>
-    </div>
-
-    <!-- Floating Stats -->
-    <div class="floating-stats" id="floatingStats">
-      <div class="stat-item">
-        <div class="stat-num" id="statMembers">175</div>
-        <div class="stat-label">Total Members</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num" id="statGens">12</div>
-        <div class="stat-label">Generations</div>
-      </div>
-      <div class="stat-item">
-        <div class="stat-num">7</div>
-        <div class="stat-label">Main Branches</div>
-      </div>
-    </div>
-
     <!-- Zoom & Navigation Controls -->
     <div class="zoom-controls" id="zoomControls">
+      <button class="zoom-btn" id="btnPanLeft" title="Pan Left">◀</button>
+      <button class="zoom-btn" id="btnPanUp" title="Pan Up">▲</button>
+      <button class="zoom-btn" id="btnPanDown" title="Pan Down">▼</button>
+      <button class="zoom-btn" id="btnPanRight" title="Pan Right">▶</button>
       <button class="zoom-btn" id="btnZoomIn" title="Zoom In">+</button>
       <button class="zoom-btn" id="btnZoomOut" title="Zoom Out">−</button>
       <button class="zoom-btn" id="btnResetZoom" title="Center View">⊙</button>
@@ -1991,17 +1967,33 @@
         firestoreDocRef.onSnapshot((doc) => {
           if (doc.exists) {
             const data = doc.data();
-            if (data && data.tree) {
+            let remoteTree = null;
+            let remoteMeta = null;
+
+            if (data && data.treeJson) {
+              try {
+                const parsed = JSON.parse(data.treeJson);
+                remoteTree = parsed.tree;
+                remoteMeta = parsed.metadata;
+              } catch (e) {
+                console.error("Error parsing treeJson:", e);
+              }
+            } else if (data && data.tree) {
+              remoteTree = data.tree;
+              remoteMeta = data.metadata;
+            }
+
+            if (remoteTree) {
               const remoteTimestamp = data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate().toLocaleTimeString() : 'Just now') : 'Just now';
               
               const currentStr = JSON.stringify(familyData.tree);
-              const remoteStr = JSON.stringify(data.tree);
+              const remoteStr = JSON.stringify(remoteTree);
 
               if (currentStr !== remoteStr) {
                 try {
                   isApplyingRemoteUpdate = true;
-                  familyData.tree = data.tree;
-                  if (data.metadata) familyData.metadata = data.metadata;
+                  familyData.tree = remoteTree;
+                  if (remoteMeta) familyData.metadata = remoteMeta;
                   localStorage.setItem(STORAGE_KEY, JSON.stringify(familyData));
                   
                   reindexAndRender();
@@ -2017,14 +2009,14 @@
               updateCloudStatusUI('connected', `Live Cloud (Synced ${remoteTimestamp})`, 'Status: 🟢 Connected & Live', `Live multi-user sync is active. Last cloud update: ${remoteTimestamp}`);
             }
           } else {
-            // First time seed: document does not exist, upload initial tree data!
-            console.log("Seeding initial family tree to Firestore...");
+            // First time seed: store as treeJson string to bypass Firestore nested limits!
+            console.log("Seeding initial family tree to Firestore as treeJson string...");
             const cleanTree = JSON.parse(JSON.stringify(familyData.tree || DEFAULT_DATA.tree));
             const cleanMeta = JSON.parse(JSON.stringify(familyData.metadata || DEFAULT_DATA.metadata));
+            const payload = JSON.stringify({ tree: cleanTree, metadata: cleanMeta });
 
             firestoreDocRef.set({
-              tree: cleanTree,
-              metadata: cleanMeta,
+              treeJson: payload,
               createdAt: firebase.firestore.FieldValue.serverTimestamp(),
               updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
               author: "Initial Digitization"
@@ -2074,10 +2066,13 @@
       try {
         const cleanTree = JSON.parse(JSON.stringify(familyData.tree));
         const cleanMetadata = JSON.parse(JSON.stringify(familyData.metadata));
+        const payload = JSON.stringify({
+          tree: cleanTree,
+          metadata: cleanMetadata
+        });
 
         firestoreDocRef.set({
-          tree: cleanTree,
-          metadata: cleanMetadata,
+          treeJson: payload,
           updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
           lastAction: authorNote
         }, { merge: true }).then(() => {
@@ -2932,13 +2927,17 @@
 
 
       // =======================================================================
-      // Touch Drag & Multi-Touch Pinch-to-Zoom for Mobile Phones
+      // Flawless Touch Drag & Multi-Touch Pinch-to-Zoom for Mobile Devices
       // =======================================================================
-      let initialPinchDistance = null;
-      let initialScale = 1;
-      let isTouchDragging = false;
+      let isTouching = false;
+      let isPinching = false;
       let touchStartX = 0;
       let touchStartY = 0;
+      let initialPinchDistance = 0;
+      let initialScale = 1;
+      let touchStartTime = 0;
+      let touchStartCoord = { x: 0, y: 0 };
+      let hasMovedSignificantly = false;
 
       function getTouchDistance(t1, t2) {
         const dx = t1.clientX - t2.clientX;
@@ -2947,112 +2946,110 @@
       }
 
       ws.addEventListener('touchstart', (e) => {
-        if (e.target.closest('.node-group') || e.target.closest('.floating-stats') || e.target.closest('.zoom-controls') || e.target.closest('#poster-container')) return;
-        
+        // Do not intercept taps on zoom / pan buttons
+        if (e.target.closest('#zoomControls') || e.target.closest('#floatingStats') || e.target.closest('#poster-container')) {
+          return;
+        }
+
+        // Prevent iOS Safari from hijacking the touch for page bounce/scroll
+        if (e.cancelable) e.preventDefault();
+
+        touchStartTime = Date.now();
+        hasMovedSignificantly = false;
+
         if (e.touches.length === 1) {
-          isTouchDragging = true;
+          isTouching = true;
+          isPinching = false;
           touchStartX = e.touches[0].clientX - state.translateX;
           touchStartY = e.touches[0].clientY - state.translateY;
+          touchStartCoord = { x: e.touches[0].clientX, y: e.touches[0].clientY };
         } else if (e.touches.length === 2) {
-          isTouchDragging = false;
+          isTouching = false;
+          isPinching = true;
           initialPinchDistance = getTouchDistance(e.touches[0], e.touches[1]);
           initialScale = state.scale;
         }
       }, { passive: false });
 
-      ws.addEventListener('touchmove', (e) => {
-        if (e.target.closest('#poster-container')) return;
-        if (isTouchDragging && e.touches.length === 1) {
-          e.preventDefault();
+      window.addEventListener('touchmove', (e) => {
+        if (!isTouching && !isPinching) return;
+
+        if (e.cancelable) e.preventDefault();
+
+        if (isTouching && e.touches.length === 1) {
+          const moveX = Math.abs(e.touches[0].clientX - touchStartCoord.x);
+          const moveY = Math.abs(e.touches[0].clientY - touchStartCoord.y);
+          if (moveX > 4 || moveY > 4) {
+            hasMovedSignificantly = true;
+          }
           state.translateX = e.touches[0].clientX - touchStartX;
           state.translateY = e.touches[0].clientY - touchStartY;
           updateViewportTransform();
-        } else if (e.touches.length === 2 && initialPinchDistance) {
-          e.preventDefault();
+        } else if (isPinching && e.touches.length === 2 && initialPinchDistance > 0) {
+          hasMovedSignificantly = true;
           const currentDistance = getTouchDistance(e.touches[0], e.touches[1]);
           const pinchFactor = currentDistance / initialPinchDistance;
           const newScale = Math.min(Math.max(initialScale * pinchFactor, 0.15), 3.0);
-          
+
           const midX = (e.touches[0].clientX + e.touches[1].clientX) / 2;
           const midY = (e.touches[0].clientY + e.touches[1].clientY) / 2;
-          
+
           state.translateX = midX - (midX - state.translateX) * (newScale / state.scale);
           state.translateY = midY - (midY - state.translateY) * (newScale / state.scale);
           state.scale = newScale;
-          
+
           updateViewportTransform();
         }
       }, { passive: false });
 
-      ws.addEventListener('touchend', (e) => {
+      window.addEventListener('touchend', (e) => {
+        if (isTouching && e.touches.length === 0) {
+          const touchDuration = Date.now() - touchStartTime;
+          // If it was a quick tap without drag movement, detect node tap!
+          if (!hasMovedSignificantly && touchDuration < 320) {
+            const tapX = touchStartCoord.x;
+            const tapY = touchStartCoord.y;
+            const elem = document.elementFromPoint(tapX, tapY);
+            if (elem) {
+              const nodeG = elem.closest('.node-group');
+              if (nodeG) {
+                const nodeId = nodeG.getAttribute('data-id');
+                const node = state.allNodesMap.get(nodeId);
+                if (node) {
+                  showDetail(node);
+                }
+              }
+            }
+          }
+          isTouching = false;
+        }
+
         if (e.touches.length === 0) {
-          isTouchDragging = false;
-          initialPinchDistance = null;
+          isTouching = false;
+          isPinching = false;
+          initialPinchDistance = 0;
         } else if (e.touches.length === 1) {
-          isTouchDragging = true;
+          isTouching = true;
+          isPinching = false;
           touchStartX = e.touches[0].clientX - state.translateX;
           touchStartY = e.touches[0].clientY - state.translateY;
-          initialPinchDistance = null;
         }
       });
 
-      // Mobile Menu Sheet Listeners
-      const mobileMenuModal = document.getElementById('mobileMenuModal');
-      const btnMobileMenu = document.getElementById('btnMobileMenu');
-      const mobileMenuClose = document.getElementById('mobileMenuClose');
+      window.addEventListener('touchcancel', () => {
+        isTouching = false;
+        isPinching = false;
+      });
 
-      if (btnMobileMenu) btnMobileMenu.addEventListener('click', () => mobileMenuModal.classList.add('open'));
-      if (mobileMenuClose) mobileMenuClose.addEventListener('click', () => mobileMenuModal.classList.remove('open'));
-
-      const mBtnWhatsApp = document.getElementById('mBtnWhatsApp');
-      if (mBtnWhatsApp) {
-        mBtnWhatsApp.addEventListener('click', () => {
-          mobileMenuModal.classList.remove('open');
-          document.getElementById('whatsappModal').classList.add('open');
-        });
-      }
-
-      const mBtnScans = document.getElementById('mBtnScans');
-      if (mBtnScans) {
-        mBtnScans.addEventListener('click', () => {
-          mobileMenuModal.classList.remove('open');
-          document.getElementById('scansModal').classList.add('open');
-        });
-      }
-
-      const mBtnCloud = document.getElementById('mBtnCloud');
-      if (mBtnCloud) {
-        mBtnCloud.addEventListener('click', () => {
-          mobileMenuModal.classList.remove('open');
-          document.getElementById('cloudModal').classList.add('open');
-        });
-      }
-
-      const mBtnExport = document.getElementById('mBtnExport');
-      if (mBtnExport) {
-        mBtnExport.addEventListener('click', () => {
-          mobileMenuModal.classList.remove('open');
-          exportJSON();
-        });
-      }
-
-      const mImportInput = document.getElementById('mImportFileInput');
-      if (mImportInput) {
-        mImportInput.addEventListener('change', (e) => {
-          if (e.target.files && e.target.files[0]) {
-            mobileMenuModal.classList.remove('open');
-            importJSON(e.target.files[0]);
-          }
-        });
-      }
-
-      const mBtnLock = document.getElementById('mBtnLock');
-      if (mBtnLock) {
-        mBtnLock.addEventListener('click', () => {
-          mobileMenuModal.classList.remove('open');
-          lockPortal();
-        });
-      }
+      // Pan Arrow Button Listeners
+      const pLeft = document.getElementById('btnPanLeft');
+      const pRight = document.getElementById('btnPanRight');
+      const pUp = document.getElementById('btnPanUp');
+      const pDown = document.getElementById('btnPanDown');
+      if (pLeft) pLeft.addEventListener('click', () => { state.translateX += 120; updateViewportTransform(); });
+      if (pRight) pRight.addEventListener('click', () => { state.translateX -= 120; updateViewportTransform(); });
+      if (pUp) pUp.addEventListener('click', () => { state.translateY += 120; updateViewportTransform(); });
+      if (pDown) pDown.addEventListener('click', () => { state.translateY -= 120; updateViewportTransform(); });
 
       window.addEventListener('mouseup', () => {
         state.isDragging = false;
@@ -3199,10 +3196,7 @@
         });
       }
 
-      // Auto-detect mobile phone and switch to Mobile Cards mode automatically!
-      if (window.innerWidth <= 768 || /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)) {
-        switchToMobileMode();
-      }
+
 
       // WhatsApp Modal
       document.getElementById('btnOpenWhatsApp').addEventListener('click', () => {
