@@ -866,7 +866,59 @@
       background: #475569 !important;
     }
 
+  
+    /* Cloud Sync Badge and Button */
+    .pill-cloud {
+      background: rgba(16, 185, 129, 0.15) !important;
+      border: 1px solid rgba(16, 185, 129, 0.4) !important;
+      color: #34d399 !important;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      transition: all 0.2s;
+    }
+    .pill-cloud:hover {
+      background: rgba(16, 185, 129, 0.25) !important;
+      border-color: #34d399 !important;
+    }
+    .btn-cloud {
+      background: linear-gradient(135deg, #0284c7, #0369a1) !important;
+      color: #fff !important;
+    }
+    .btn-cloud:hover {
+      background: linear-gradient(135deg, #0ea5e9, #0284c7) !important;
+    }
+    .toast-notification {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: #1e293b;
+      border: 1px solid #10b981;
+      border-radius: 10px;
+      padding: 12px 18px;
+      color: #f8fafc;
+      font-size: 0.88rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .toast-notification.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
   </style>
+  <!-- Google Firebase SDKs (Cloud Live Sync) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
 </head>
 <body>
 
@@ -915,7 +967,7 @@
       <div class="pill">Deity: <strong>Vyaghrambari, Munjawati</strong></div>
       <div class="pill">Gotra: <strong>Gandhamadan</strong></div>
       <div class="pill">Original Date: <strong>Nov 28, 1992</strong></div>
-      <div id="storageBadge">● Changes Saved Locally</div>
+      <div id="storageBadge" class="pill pill-cloud" title="Click for Cloud Sync details"><span id="cloudStatusDot">🟡</span> <span id="cloudStatusText">Local Only</span></div>
     </div>
 
     <div class="toolbar">
@@ -950,6 +1002,10 @@
       <!-- View Scans Modal Trigger -->
       <button class="btn" id="btnOpenScans" title="View 1992 handwritten sheets">
         <span>📜</span> Original Scans
+      </button>
+      <!-- Cloud Sync Button -->
+      <button class="btn btn-cloud" id="btnOpenCloudModal" title="Live multi-user Cloud Sync">
+        <span>☁️</span> Cloud Sync
       </button>
       <!-- Lock Portal Button -->
       <button class="btn btn-lock" id="btnLockPortal" title="Lock portal / Log out">
@@ -1329,13 +1385,175 @@
       familyData = JSON.parse(JSON.stringify(DEFAULT_DATA));
     }
 
-    function saveToStorage() {
+    function saveToStorage(actionNote = 'Family Edit') {
       try {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(familyData));
-        document.getElementById('storageBadge').style.display = 'inline-flex';
       } catch (e) {
         console.warn("Storage save error:", e);
       }
+      saveToCloudDatabase(actionNote);
+    }
+
+
+    // =========================================================================
+    // GOOGLE FIREBASE LIVE CLOUD SYNC
+    // Allows multi-user live editing across family members worldwide.
+    // =========================================================================
+    const DEFAULT_FIREBASE_CONFIG = {
+      apiKey: "",
+      authDomain: "",
+      projectId: "",
+      storageBucket: "",
+      messagingSenderId: "",
+      appId: ""
+    };
+
+    let firebaseDb = null;
+    let firestoreDocRef = null;
+    let isCloudSyncActive = false;
+    let isApplyingRemoteUpdate = false;
+
+    function showToast(msg, icon = '🟢') {
+      const toast = document.getElementById('toastNotification');
+      if (!toast) return;
+      document.getElementById('toastIcon').textContent = icon;
+      document.getElementById('toastMessage').textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3500);
+    }
+
+    function updateCloudStatusUI(status, label, title, desc) {
+      const badge = document.getElementById('storageBadge');
+      const dot = document.getElementById('cloudStatusDot');
+      const text = document.getElementById('cloudStatusText');
+      const modalTitle = document.getElementById('cloudModalStatusTitle');
+      const modalDesc = document.getElementById('cloudModalStatusDesc');
+
+      if (badge && text) {
+        badge.style.display = 'inline-flex';
+        if (dot) dot.textContent = status === 'connected' ? '🟢' : (status === 'saving' ? '🔄' : '🟡');
+        text.textContent = label;
+      }
+
+      if (modalTitle) {
+        modalTitle.textContent = title;
+        modalTitle.style.color = status === 'connected' ? '#10b981' : '#f59e0b';
+      }
+      if (modalDesc && desc) {
+        modalDesc.textContent = desc;
+      }
+    }
+
+    function getActiveFirebaseConfig() {
+      try {
+        const saved = localStorage.getItem('likhite_firebase_config_v1');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (parsed && parsed.apiKey && parsed.projectId) return parsed;
+        }
+      } catch (e) {
+        console.warn("Could not read saved firebase config", e);
+      }
+      if (DEFAULT_FIREBASE_CONFIG.apiKey && DEFAULT_FIREBASE_CONFIG.projectId) {
+        return DEFAULT_FIREBASE_CONFIG;
+      }
+      return null;
+    }
+
+    function initFirebaseSync() {
+      const config = getActiveFirebaseConfig();
+      const configInput = document.getElementById('firebaseConfigInput');
+      if (configInput && config) {
+        configInput.value = JSON.stringify(config, null, 2);
+      }
+
+      if (!config || !config.apiKey || !config.projectId) {
+        updateCloudStatusUI('local', 'Local Storage (Click for Cloud)', 'Status: Local Offline Mode', 'Live cloud sync is not configured yet. Edits are saved on this device only.');
+        return;
+      }
+
+      try {
+        if (!firebase.apps.length) {
+          firebase.initializeApp(config);
+        }
+        firebaseDb = firebase.firestore();
+        firestoreDocRef = firebaseDb.collection('family_portal').doc('likhite_tree');
+
+        updateCloudStatusUI('saving', 'Connecting Cloud...', 'Status: Connecting to Firebase Cloud...', 'Connecting to Firestore live database...');
+
+        // Real-time listener: triggers whenever any family member makes an edit
+        firestoreDocRef.onSnapshot((doc) => {
+          if (doc.exists) {
+            const data = doc.data();
+            if (data && data.tree) {
+              const remoteTimestamp = data.updatedAt ? (data.updatedAt.toDate ? data.updatedAt.toDate().toLocaleTimeString() : 'Just now') : 'Just now';
+              
+              // Only re-render if tree actually changed
+              const currentStr = JSON.stringify(familyData.tree);
+              const remoteStr = JSON.stringify(data.tree);
+
+              if (currentStr !== remoteStr) {
+                isApplyingRemoteUpdate = true;
+                familyData.tree = data.tree;
+                if (data.metadata) familyData.metadata = data.metadata;
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(familyData));
+                
+                buildIndices();
+                renderActiveView();
+                isApplyingRemoteUpdate = false;
+                showToast(`Family tree updated live! (${remoteTimestamp})`, '✨');
+              }
+
+              isCloudSyncActive = true;
+              updateCloudStatusUI('connected', `Live Cloud (Synced ${remoteTimestamp})`, 'Status: 🟢 Connected & Live', `Live multi-user sync is active. Last cloud update: ${remoteTimestamp}`);
+            }
+          } else {
+            // First time seed: document does not exist, upload initial tree data!
+            console.log("Seeding initial family tree to Firestore...");
+            firestoreDocRef.set({
+              tree: DEFAULT_DATA.tree,
+              metadata: DEFAULT_DATA.metadata,
+              createdAt: firebase.firestore.FieldValue.serverTimestamp(),
+              updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+              author: "Initial Digitization"
+            }).then(() => {
+              isCloudSyncActive = true;
+              updateCloudStatusUI('connected', 'Live Cloud (Connected)', 'Status: 🟢 Connected & Seeded', 'Initial family database has been uploaded to Firestore successfully.');
+              showToast('Family tree uploaded to cloud database!', '☁️');
+            }).catch(err => {
+              console.error("Firestore seed error:", err);
+            });
+          }
+        }, (error) => {
+          console.error("Firestore live listener error:", error);
+          updateCloudStatusUI('local', 'Cloud Error (Using Local)', 'Status: ⚠️ Cloud Connection Failed', `Error: ${error.message}. Edits are being saved to your local storage.`);
+        });
+
+      } catch (err) {
+        console.error("Failed to initialize Firebase:", err);
+        updateCloudStatusUI('local', 'Local Storage', 'Status: Local Offline Mode', err.message);
+      }
+    }
+
+    function saveToCloudDatabase(authorNote = 'Edit') {
+      if (!firebaseDb || !firestoreDocRef || isApplyingRemoteUpdate) return;
+      
+      updateCloudStatusUI('saving', 'Saving to Cloud...', 'Status: Saving Changes...', 'Uploading changes to the live family database...');
+      
+      firestoreDocRef.set({
+        tree: familyData.tree,
+        metadata: familyData.metadata,
+        updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+        lastAction: authorNote
+      }, { merge: true }).then(() => {
+        const timeStr = new Date().toLocaleTimeString();
+        updateCloudStatusUI('connected', `Live Cloud (Saved ${timeStr})`, 'Status: 🟢 Connected & Live', `All changes are saved to the cloud. (Last save: ${timeStr})`);
+        showToast('Changes saved to family cloud!', '✅');
+      }).catch(err => {
+        console.error("Cloud save failed:", err);
+        updateCloudStatusUI('local', 'Saved Locally (Cloud failed)', 'Status: ⚠️ Cloud Save Failed', err.message);
+        showToast('Saved locally, but cloud sync failed.', '⚠️');
+      });
     }
 
     // App State
@@ -1366,6 +1584,46 @@
         state.allNodesMap.forEach((_, id) => state.expandedNodes.add(id));
 
         setupEventListeners();
+
+      // Cloud Sync Modal Listeners
+      const cloudModal = document.getElementById('cloudModal');
+      const btnOpenCloud = document.getElementById('btnOpenCloudModal');
+      const cloudBadge = document.getElementById('storageBadge');
+      const cloudModalClose = document.getElementById('cloudModalClose');
+      const btnSaveConfig = document.getElementById('btnSaveCloudConfig');
+
+      if (btnOpenCloud) btnOpenCloud.addEventListener('click', () => cloudModal.classList.add('open'));
+      if (cloudBadge) cloudBadge.addEventListener('click', () => cloudModal.classList.add('open'));
+      if (cloudModalClose) cloudModalClose.addEventListener('click', () => cloudModal.classList.remove('open'));
+
+      if (btnSaveConfig) {
+        btnSaveConfig.addEventListener('click', () => {
+          const raw = document.getElementById('firebaseConfigInput').value.trim();
+          try {
+            // Clean up possible JS object notation
+            let jsonStr = raw;
+            if (!raw.startsWith('{')) {
+              jsonStr = '{' + raw + '}';
+            }
+            // Allow loose JS keys like apiKey: "..."
+            const parsed = Function('"use strict";return (' + raw + ')')();
+            if (parsed && parsed.apiKey && parsed.projectId) {
+              localStorage.setItem('likhite_firebase_config_v1', JSON.stringify(parsed));
+              showToast('Firebase configuration saved!', '✅');
+              cloudModal.classList.remove('open');
+              initFirebaseSync();
+            } else {
+              alert("Please enter a valid Firebase configuration containing at least 'apiKey' and 'projectId'.");
+            }
+          } catch (e) {
+            alert("Invalid configuration format. Please paste your firebaseConfig object. Error: " + e.message);
+          }
+        });
+      }
+
+      // Initialize Firebase sync
+      initFirebaseSync();
+
         renderTree();
 
         // Center on Devavrat
@@ -2143,5 +2401,55 @@
       setupAuthGate();
     }
   </script>
+  <!-- Cloud Sync Modal -->
+  <div class="modal-overlay" id="cloudModal">
+    <div class="modal-content" style="max-width: 540px;">
+      <div class="modal-header">
+        <h3 style="display:flex; align-items:center; gap:8px;"><span>☁️</span> Live Family Cloud Sync (Firebase)</h3>
+        <button class="btn-close" id="cloudModalClose">&times;</button>
+      </div>
+      <div class="modal-body" style="padding: 20px;">
+        <div style="background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); border-radius: 8px; padding: 14px; margin-bottom: 16px;">
+          <div style="font-weight: 600; color: #10b981; margin-bottom: 4px;" id="cloudModalStatusTitle">
+            Status: Checking Cloud Connection...
+          </div>
+          <div style="font-size: 0.82rem; color: #cbd5e1;" id="cloudModalStatusDesc">
+            When connected, all family members worldwide can edit names, add birthdates, and add children with instant live sync!
+          </div>
+        </div>
+
+        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px;">
+          To enable live cloud sync for the whole family, paste your free Google Firebase config below:
+        </div>
+
+        <div style="margin-bottom: 14px;">
+          <label style="display:block; font-size:0.8rem; margin-bottom:6px; color:#cbd5e1; font-weight:600;">Firebase Configuration (JSON / Object):</label>
+          <textarea id="firebaseConfigInput" rows="7" style="width: 100%; background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 10px; color: #e2e8f0; font-family: monospace; font-size: 0.8rem;" placeholder='{
+  "apiKey": "AIzaSy...",
+  "projectId": "likhite-family-tree",
+  "appId": "..."
+}'></textarea>
+        </div>
+
+        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+          <button type="button" class="btn" id="btnSaveCloudConfig" style="background:#10b981; color:#fff; font-weight:600;">Save & Connect Cloud</button>
+        </div>
+
+        <div style="margin-top: 18px; border-top: 1px solid #334155; padding-top: 12px; font-size: 0.78rem; color: #94a3b8; line-height: 1.45;">
+          <strong>Quick Setup (Free Google Firebase):</strong><br>
+          1. Go to <a href="https://console.firebase.google.com/" target="_blank" style="color: var(--accent); text-decoration: underline;">console.firebase.google.com</a> and click <strong>Create a project</strong>.<br>
+          2. Under <strong>Build &rarr; Firestore Database</strong>, click <strong>Create Database</strong> (test mode).<br>
+          3. Register a Web App (&lt;/&gt;) in the dashboard and paste the config here.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toastNotification" class="toast-notification">
+    <span id="toastIcon">🟢</span>
+    <span id="toastMessage">Family tree synced with cloud!</span>
+  </div>
+
 </body>
 </html>
